@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic Card Trick</title>
     
-    <!-- ========== PWA META TAGS ========== -->
+    <!-- ========== PWA META TAGS UNTUK INSTALL KE LAYAR UTAMA ========== -->
     <meta name="theme-color" content="#000000">
-    <link id="manifest-placeholder" rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTWFnaWMgQ2FyZCBUcmljayIsInNob3J0X25hbWUiOiJNYWdpYyBDYXJkIiwiZGVzY3JpcHRpb24iOiJNYWdpY2FsIGNhcmQgdHJhbnNmb3JtYXRpb24gYXBwIHdpdGggdGlsdCBjb250cm9scyIsInN0YXJ0X3VybCI6Ii4vc2xpZGVjYXJkcm9pZC5odG1sIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzAwMDAwMCIsInRoZW1lX2NvbG9yIjoiIzAwMDAwMCIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJpY29ucyI6W3sic3JjIjoiLi9pY29uL3NsaWRlLTUxMng1MTIucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifSx7InNyYyI6Ii4vaWNvbi9zbGlkZS0xOTJ4MTkyLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn1dfQ==">
     <meta name="description" content="Magic Card Trick - A magical card transformation app">
-    <!-- =================================== -->
+    <link rel="manifest" href="./manifest.json">
+    <!-- =============================================================== -->
     
     <link rel="apple-touch-icon" href="./icon/slide-512x512.png">
     <link rel="apple-touch-startup-image" href="./icon/slide-512x512.png">
@@ -64,6 +64,7 @@
             opacity: 0;
             visibility: hidden;
             transform-origin: center;
+            transform: scale(1.2); /* 🔥 BESARKAN SEDIKIT  1.1 1.15*/
         }
 
         .card-visible {
@@ -83,7 +84,7 @@
         }
 
         .card-moving {
-            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+             transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
         }
         
         #settings {
@@ -122,6 +123,12 @@
             align-items: center;
             justify-content: center;
             background: #333;
+            cursor: pointer;
+            transition: border-color 0.3s;
+        }
+        
+        .upload-preview:hover {
+            border-color: #4CAF50;
         }
         
         .upload-preview img {
@@ -264,44 +271,212 @@
             opacity: 1;
         }
         
-        /* ========== PWA INSTALL BUTTON ========== */
-        #install-button {
+        /* ========== SIZE EDITOR MODAL ========== */
+        #size-editor-modal {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #2196F3;
-            color: white;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 9999;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        
+        #size-editor-container {
+            background: rgba(30,30,30,0.95);
+            padding: 25px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+            backdrop-filter: blur(20px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .size-preview-area {
+            width: 100%;
+            height: 250px;
+            background: rgba(0,0,0,0.5);
+            border-radius: 10px;
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            position: relative;
+            border: 2px dashed rgba(255,255,255,0.2);
+        }
+        
+        #size-preview-card {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            transition: transform 0.2s;
+            cursor: grab;
+            user-select: none;
+            -webkit-user-drag: none;
+        }
+        
+        #size-preview-card:active {
+            cursor: grabbing;
+        }
+        
+        .size-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .size-slider {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .size-slider label {
+            min-width: 80px;
+            font-size: 14px;
+        }
+        
+        .size-slider input[type="range"] {
+            flex: 1;
+            height: 6px;
+            -webkit-appearance: none;
+            background: rgba(255,255,255,0.1);
+            border-radius: 3px;
+            outline: none;
+        }
+        
+        .size-slider input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
+        }
+        
+        .size-slider input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #4CAF50;
+            cursor: pointer;
             border: none;
-            padding: 10px 15px;
+        }
+        
+        .size-value {
+            min-width: 40px;
+            text-align: center;
+            font-weight: bold;
+            color: #4CAF50;
+        }
+        
+        .size-preset-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+        
+        .size-preset {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 8px 12px;
             border-radius: 5px;
             cursor: pointer;
-            z-index: 100;
             font-size: 14px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: all 0.2s;
         }
         
-        #install-button.visible {
-            display: block;
+        .size-preset:hover {
+            background: rgba(255,255,255,0.2);
         }
         
-        #install-button:hover {
-            background: #1976D2;
+        .size-preset.active {
+            background: #4CAF50;
+            border-color: #4CAF50;
         }
-        /* ======================================= */
+        
+        .size-modal-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            justify-content: center;
+        }
+        
+        .size-modal-buttons button {
+            min-width: 100px;
+        }
+        
+        #cancel-size {
+            background: #f44336;
+        }
+        
+        #save-size {
+            background: #4CAF50;
+        }
+        
+        .size-info {
+            font-size: 12px;
+            color: #888;
+            text-align: center;
+            margin-top: 10px;
+            font-style: italic;
+        }
     </style>
 </head>
 <body>
-    <!-- ========== PWA INSTALL BUTTON ========== -->
-    <button id="install-button" class="hidden">
-        📲 Install App
-    </button>
-    
     <div id="background"></div>
     <img id="card" src="https://deckofcardsapi.com/static/img/AS.png" alt="Magic Card">
     
     <!-- TITIK INDIKATOR -->
     <div id="card-indicator"></div>
+    
+    <!-- SIZE EDITOR MODAL -->
+    <div id="size-editor-modal">
+        <div id="size-editor-container">
+            <h2 style="text-align: center; margin-bottom: 20px;">Adjust Card Size</h2>
+            
+            <div class="size-preview-area">
+                <img id="size-preview-card" src="" alt="Card Preview">
+            </div>
+            
+            <div class="size-controls">
+                <div class="size-slider">
+                    <label>Scale:</label>
+                    <input type="range" id="scale-slider" min="0.5" max="3" step="0.1" value="1.2">
+                    <div class="size-value" id="scale-value">1.2x</div>
+                </div>
+                
+                <div class="size-slider">
+                    <label>Width:</label>
+                    <input type="range" id="width-slider" min="150" max="500" step="10" value="300">
+                    <div class="size-value" id="width-value">300px</div>
+                </div>
+            </div>
+            
+            <div class="size-preset-buttons">
+                <div class="size-preset" data-scale="0.8" data-width="200">Small</div>
+                <div class="size-preset active" data-scale="1.2" data-width="300">Medium</div>
+                <div class="size-preset" data-scale="1.5" data-width="350">Large</div>
+                <div class="size-preset" data-scale="2.0" data-width="400">X-Large</div>
+            </div>
+            
+            <p class="size-info">Drag the card in preview area to test the size</p>
+            
+            <div class="size-modal-buttons">
+                <button id="cancel-size">Cancel</button>
+                <button id="save-size">Save Size</button>
+            </div>
+        </div>
+    </div>
     
     <div id="settings">
         <h2>Magic Card Settings</h2>
@@ -315,7 +490,7 @@
         </div>
         
         <div class="setting-section">
-            <h3>Card Images</h3>
+            <h3>Card Images & Size</h3>
             <p>Upload two images for card transformation</p>
             
             <div class="image-upload-row">
@@ -324,7 +499,8 @@
                         Card Image 1
                     </button>
                     <input type="file" id="card-upload-1" accept="image/*" data-index="1">
-                    <div class="upload-preview" id="preview-1"></div>
+                    <div class="upload-preview" id="preview-1" onclick="openSizeEditor(1)"></div>
+                    <small style="margin-top: 5px; color: #aaa; font-size: 12px;">Tap preview to adjust size</small>
                 </div>
 
                 <div class="upload-label">
@@ -332,13 +508,15 @@
                         Card Image 2
                     </button>
                     <input type="file" id="card-upload-2" accept="image/*" data-index="2">
-                    <div class="upload-preview" id="preview-2"></div>
+                    <div class="upload-preview" id="preview-2" onclick="openSizeEditor(2)"></div>
+                    <small style="margin-top: 5px; color: #aaa; font-size: 12px;">Tap preview to adjust size</small>
                 </div>
             </div>
             
             <div style="margin-top: 15px;">
                 <button id="default-cards">Use Default Cards</button>
                 <button id="swap-cards">Swap Images 1↔2</button>
+                <button id="reset-size" style="background: #FF9800;">Reset Size</button>
             </div>
             
             <div style="margin-top: 15px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;">
@@ -346,7 +524,13 @@
                     <strong>How it works:</strong><br>
                     1. Double tap to summon card<br>
                     2. Card shows Image 1<br>
-                    3. After 5 seconds, card flips to Image 2
+                    3. After 5 seconds, card flips to Image 2<br>
+                    <br>
+                    <strong>Size Adjustment:</strong><br>
+                    • Tap card preview to open size editor<br>
+                    • Drag card in preview to test<br>
+                    • Use sliders or presets<br>
+                    • Changes apply to both cards
                 </small>
             </div>
         </div>
@@ -362,211 +546,385 @@
     </button>
 
     <script>
-    // ========== INLINE SERVICE WORKER ==========
-    // Generate dynamic service worker Blob
-    function createServiceWorker() {
-        const swCode = `
-            const CACHE_NAME = 'magic-card-v1';
-            
-            self.addEventListener('install', event => {
-                event.waitUntil(
-                    caches.open(CACHE_NAME)
-                        .then(cache => {
-                            console.log('✅ Cache opened');
-                            // Cache the main page and critical assets
-                            return cache.addAll([
-                                './slidecardroid.html',
-                                './icon/slide-512x512.png',
-                                './icon/slide-192x192.png'
-                            ]);
-                        })
-                );
-            });
-            
-            self.addEventListener('activate', event => {
-                event.waitUntil(
-                    caches.keys().then(cacheNames => {
-                        return Promise.all(
-                            cacheNames.map(cacheName => {
-                                if (cacheName !== CACHE_NAME) {
-                                    console.log('🗑️ Deleting old cache:', cacheName);
-                                    return caches.delete(cacheName);
-                                }
-                            })
-                        );
-                    })
-                );
-            });
-            
-            self.addEventListener('fetch', event => {
-                // Skip non-GET requests
-                if (event.request.method !== 'GET') return;
-                
-                event.respondWith(
-                    caches.match(event.request)
-                        .then(response => {
-                            // Return cached version if found
-                            if (response) {
-                                return response;
-                            }
-                            
-                            // Otherwise fetch from network
-                            return fetch(event.request)
-                                .then(response => {
-                                    // Don't cache if not a valid response
-                                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                                        return response;
-                                    }
-                                    
-                                    // Clone the response
-                                    const responseToCache = response.clone();
-                                    
-                                    // Cache the new response
-                                    caches.open(CACHE_NAME)
-                                        .then(cache => {
-                                            cache.put(event.request, responseToCache);
-                                        });
-                                    
-                                    return response;
-                                });
-                        })
-                        .catch(() => {
-                            // If both cache and network fail, show offline page or fallback
-                            return new Response('You are offline', {
-                                status: 503,
-                                statusText: 'Service Unavailable',
-                                headers: new Headers({
-                                    'Content-Type': 'text/plain'
-                                })
-                            });
-                        })
-                );
-            });
-        `;
-        
-        return new Blob([swCode], { type: 'application/javascript' });
-    }
+    // ========== PWA INSTALL FUNCTIONALITY UNTUK LAYAR UTAMA ==========
+    // Tambahkan di bagian paling atas JavaScript
     
-    // ========== DYNAMIC MANIFEST ==========
-    function createManifest() {
-        const manifest = {
-            "name": "Magic Card Trick",
-            "short_name": "Magic Card",
-            "description": "Magical card transformation app with tilt controls",
-            "start_url": "./slidecardroid.html",
-            "display": "standalone",
-            "background_color": "#000000",
-            "theme_color": "#000000",
-            "orientation": "portrait",
-            "icons": [
-                {
-                    "src": "./icon/slide-512x512.png",
-                    "sizes": "512x512",
-                    "type": "image/png",
-                    "purpose": "any maskable"
-                },
-                {
-                    "src": "./icon/slide-192x192.png",
-                    "sizes": "192x192",
-                    "type": "image/png",
-                    "purpose": "any maskable"
-                }
-            ]
-        };
-        
-        // Convert to base64
-        const manifestString = JSON.stringify(manifest);
-        const base64Manifest = btoa(manifestString);
-        
-        // Update manifest link
-        const manifestLink = document.getElementById('manifest-placeholder');
-        manifestLink.href = `data:application/manifest+json;base64,${base64Manifest}`;
-        
-        return manifest;
-    }
+    // Cek apakah sudah dalam mode standalone (sudah diinstall)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone === true;
     
-    // ========== PWA INSTALL FUNCTIONALITY ==========
-    let deferredPrompt;
-    const installButton = document.getElementById('install-button');
-    
-    // Create dynamic manifest on load
-    createManifest();
-    
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            // Create service worker Blob URL
-            const swBlob = createServiceWorker();
-            const swURL = URL.createObjectURL(swBlob);
+    if (!isStandalone) {
+        // Tambahkan install prompt jika belum diinstall
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
             
-            navigator.serviceWorker.register(swURL)
-                .then(registration => {
-                    console.log('✅ Service Worker registered:', registration.scope);
+            // Tampilkan toast notification untuk install
+            setTimeout(() => {
+                showInstallToast();
+            }, 3000);
+        });
+        
+        // Toast notification untuk install
+        function showInstallToast() {
+            const toast = document.createElement('div');
+            toast.id = 'install-toast';
+            toast.innerHTML = `
+                <div style="background: rgba(0,0,0,0.8); color: white; padding: 12px 16px; border-radius: 8px; 
+                     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                     z-index: 10000; text-align: center; max-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    <div style="margin-bottom: 8px; font-weight: bold;">✨ Install Magic Card Trick</div>
+                    <div style="font-size: 14px; margin-bottom: 10px;">Install ke layar utama untuk pengalaman terbaik!</div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button id="install-now" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 14px; cursor: pointer;">
+                            Install Now
+                        </button>
+                        <button id="dismiss-toast" style="background: transparent; color: #aaa; border: 1px solid #666; padding: 6px 12px; border-radius: 4px; font-size: 14px; cursor: pointer;">
+                            Nanti
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Event handler untuk tombol install
+            document.getElementById('install-now').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    // Show the install prompt
+                    deferredPrompt.prompt();
                     
-                    // Check for updates
-                    registration.addEventListener('updatefound', () => {
-                        console.log('🔄 Service Worker update found');
-                    });
-                })
-                .catch(error => {
-                    console.log('❌ Service Worker registration failed:', error);
-                });
+                    // Wait for the user to respond to the prompt
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    
+                    deferredPrompt = null;
+                } else {
+                    // Jika prompt tidak tersedia, beri instruksi manual
+                    alert(`Untuk install Magic Card Trick ke layar utama:
+
+1. Tap menu Chrome (⋮) di pojok kanan atas
+2. Pilih "Add to Home Screen"
+3. Tap "Add"
+
+Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
+                }
+                
+                // Hapus toast
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            });
+            
+            // Event handler untuk dismiss
+            document.getElementById('dismiss-toast').addEventListener('click', () => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+                // Simpan di localStorage agar tidak muncul lagi hari ini
+                localStorage.setItem('installToastDismissed', Date.now());
+            });
+            
+            // Auto hide setelah 15 detik
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 15000);
+        }
+        
+        // Cek apakah sudah pernah dismiss hari ini
+        const lastDismiss = localStorage.getItem('installToastDismissed');
+        const oneDay = 24 * 60 * 60 * 1000;
+        
+        if (!lastDismiss || (Date.now() - parseInt(lastDismiss)) > oneDay) {
+            // Tampilkan toast setelah 3 detik
+            setTimeout(showInstallToast, 3000);
+        }
+        
+        // Deteksi saat app diinstall
+        window.addEventListener('appinstalled', () => {
+            console.log('Magic Card Trick berhasil diinstall ke layar utama!');
+            // Hapus toast jika masih ada
+            const toast = document.getElementById('install-toast');
+            if (toast && toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
         });
     }
     
-    // Event listener for beforeinstallprompt
-    window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('PWA install prompt available');
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
-        e.preventDefault();
-        // Stash the event so it can be triggered later
-        deferredPrompt = e;
-        
-        // Show install button
-        installButton.classList.add('visible');
-        
-        // Auto hide after 10 seconds
-        setTimeout(() => {
-            installButton.classList.remove('visible');
-        }, 10000);
-    });
-    
-    // Install button click handler
-    installButton.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        
-        // Show the install prompt
-        deferredPrompt.prompt();
-        
-        // Wait for the user to respond to the prompt
-        const { outcome } = await deferredPrompt.userChoice;
-        
-        console.log(`User response to the install prompt: ${outcome}`);
-        
-        // Hide the install button
-        installButton.classList.remove('visible');
-        
-        // Clear the deferredPrompt variable
-        deferredPrompt = null;
-    });
-    
-    // Detect if app is already installed
-    window.addEventListener('appinstalled', () => {
-        console.log('PWA was installed');
-        installButton.classList.remove('visible');
-        deferredPrompt = null;
-        
-        // Show success message
-        alert('✅ Magic Card Trick installed successfully! You can now find it on your home screen.');
-    });
-    
-    // Check if app is running in standalone mode (already installed)
-    if (window.matchMedia('(display-mode: standalone)').matches || 
-        window.navigator.standalone === true) {
-        console.log('App is running in standalone mode');
-        installButton.classList.remove('visible');
+    // Register Service Worker untuk offline support
+    if ('serviceWorker' in navigator && !isStandalone) {
+        window.addEventListener('load', () => {
+            // Simple service worker untuk cache
+            const swCode = `
+                const CACHE_NAME = 'magic-card-v1';
+                
+                self.addEventListener('install', (event) => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                return cache.addAll([
+                                    './slidecard.html',
+                                    './icon/slide-512x512.png'
+                                ]);
+                            })
+                    );
+                });
+                
+                self.addEventListener('fetch', (event) => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                return response || fetch(event.request);
+                            })
+                    );
+                });
+            `;
+            
+            try {
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl, { scope: './' })
+                    .then(registration => {
+                        console.log('Service Worker registered untuk offline support');
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            } catch (error) {
+                console.log('Error creating Service Worker:', error);
+            }
+        });
     }
-    // ================================================
+    // ================================================================
+    
+    // ========== CARD SIZE MANAGEMENT ==========
+    // Storage untuk ukuran kartu
+    const STORAGE_KEYS = {
+        image1: 'magic_card_image_1',
+        image2: 'magic_card_image_2',
+        background: 'magic_card_background',
+        cardScale: 'magic_card_scale',
+        cardWidth: 'magic_card_width'
+    };
+
+    // Default size values
+    let cardScale = 1.2;
+    let cardMaxWidth = 300;
+    let editingCardIndex = 1;
+    
+    // Load saved size dari localStorage
+    function loadCardSize() {
+        const savedScale = localStorage.getItem(STORAGE_KEYS.cardScale);
+        const savedWidth = localStorage.getItem(STORAGE_KEYS.cardWidth);
+        
+        if (savedScale) cardScale = parseFloat(savedScale);
+        if (savedWidth) cardMaxWidth = parseInt(savedWidth);
+        
+        // Apply size ke kartu utama
+        applyCardSize();
+    }
+    
+    // Save size ke localStorage
+    function saveCardSize() {
+        localStorage.setItem(STORAGE_KEYS.cardScale, cardScale.toString());
+        localStorage.setItem(STORAGE_KEYS.cardWidth, cardMaxWidth.toString());
+    }
+    
+    // Apply size ke kartu utama
+    function applyCardSize() {
+        if (card) {
+            card.style.transform = `scale(${cardScale})`;
+            card.style.maxWidth = `${cardMaxWidth}px`;
+        }
+    }
+    
+    // Open size editor modal
+    function openSizeEditor(cardIndex) {
+        editingCardIndex = cardIndex;
+        const sizeEditor = document.getElementById('size-editor-modal');
+        const previewCard = document.getElementById('size-preview-card');
+        
+        // Set image untuk preview
+        previewCard.src = cardImages[`image${cardIndex}`];
+        
+        // Set slider values
+        document.getElementById('scale-slider').value = cardScale;
+        document.getElementById('width-slider').value = cardMaxWidth;
+        updateSliderValues();
+        
+        // Update preset buttons
+        updatePresetButtons();
+        
+        // Apply initial size ke preview
+        updatePreviewCard();
+        
+        // Show modal
+        sizeEditor.style.display = 'flex';
+        
+        // Setup drag untuk preview card
+        setupPreviewDrag();
+    }
+    
+    // Update slider value displays
+    function updateSliderValues() {
+        document.getElementById('scale-value').textContent = `${cardScale.toFixed(1)}x`;
+        document.getElementById('width-value').textContent = `${cardMaxWidth}px`;
+    }
+    
+    // Update preset buttons
+    function updatePresetButtons() {
+        const presets = document.querySelectorAll('.size-preset');
+        presets.forEach(preset => {
+            const presetScale = parseFloat(preset.dataset.scale);
+            const presetWidth = parseInt(preset.dataset.width);
+            
+            if (Math.abs(presetScale - cardScale) < 0.1 && 
+                Math.abs(presetWidth - cardMaxWidth) < 10) {
+                preset.classList.add('active');
+            } else {
+                preset.classList.remove('active');
+            }
+        });
+    }
+    
+    // Update preview card dengan size terkini
+    function updatePreviewCard() {
+        const previewCard = document.getElementById('size-preview-card');
+        previewCard.style.transform = `scale(${cardScale})`;
+        previewCard.style.maxWidth = `${cardMaxWidth}px`;
+    }
+    
+    // Setup drag untuk preview card
+    function setupPreviewDrag() {
+        const previewCard = document.getElementById('size-preview-card');
+        const previewArea = document.querySelector('.size-preview-area');
+        
+        let isDragging = false;
+        let startX, startY;
+        let startLeft, startTop;
+        
+        // Reset position
+        previewCard.style.left = '0';
+        previewCard.style.top = '0';
+        previewCard.style.position = 'relative';
+        
+        previewCard.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 1) {
+                isDragging = true;
+                startX = e.touches[0].clientX;
+                startY = e.touches[0].clientY;
+                
+                const rect = previewCard.getBoundingClientRect();
+                const areaRect = previewArea.getBoundingClientRect();
+                
+                startLeft = rect.left - areaRect.left;
+                startTop = rect.top - areaRect.top;
+                
+                e.preventDefault();
+            }
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            if (isDragging && e.touches.length === 1) {
+                const deltaX = e.touches[0].clientX - startX;
+                const deltaY = e.touches[0].clientY - startY;
+                
+                const newLeft = startLeft + deltaX;
+                const newTop = startTop + deltaY;
+                
+                // Batasi gerakan dalam area preview
+                const maxX = previewArea.offsetWidth - previewCard.offsetWidth;
+                const maxY = previewArea.offsetHeight - previewCard.offsetHeight;
+                
+                previewCard.style.left = `${Math.max(0, Math.min(maxX, newLeft))}px`;
+                previewCard.style.top = `${Math.max(0, Math.min(maxY, newTop))}px`;
+                
+                e.preventDefault();
+            }
+        });
+        
+        document.addEventListener('touchend', () => {
+            isDragging = false;
+        });
+    }
+    
+    // Initialize size editor events
+    function initSizeEditor() {
+        const sizeEditor = document.getElementById('size-editor-modal');
+        const scaleSlider = document.getElementById('scale-slider');
+        const widthSlider = document.getElementById('width-slider');
+        const cancelBtn = document.getElementById('cancel-size');
+        const saveBtn = document.getElementById('save-size');
+        const presetButtons = document.querySelectorAll('.size-preset');
+        
+        // Scale slider event
+        scaleSlider.addEventListener('input', (e) => {
+            cardScale = parseFloat(e.target.value);
+            updateSliderValues();
+            updatePreviewCard();
+            updatePresetButtons();
+        });
+        
+        // Width slider event
+        widthSlider.addEventListener('input', (e) => {
+            cardMaxWidth = parseInt(e.target.value);
+            updateSliderValues();
+            updatePreviewCard();
+            updatePresetButtons();
+        });
+        
+        // Preset button events
+        presetButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                cardScale = parseFloat(button.dataset.scale);
+                cardMaxWidth = parseInt(button.dataset.width);
+                
+                scaleSlider.value = cardScale;
+                widthSlider.value = cardMaxWidth;
+                
+                updateSliderValues();
+                updatePreviewCard();
+                updatePresetButtons();
+            });
+        });
+        
+        // Cancel button
+        cancelBtn.addEventListener('click', () => {
+            // Restore original size
+            loadCardSize();
+            sizeEditor.style.display = 'none';
+        });
+        
+        // Save button
+        saveBtn.addEventListener('click', () => {
+            // Save size
+            saveCardSize();
+            applyCardSize();
+            sizeEditor.style.display = 'none';
+            
+            // Show confirmation
+            alert(`Card size saved:\nScale: ${cardScale.toFixed(1)}x\nMax Width: ${cardMaxWidth}px`);
+        });
+        
+        // Close modal ketika klik di luar
+        sizeEditor.addEventListener('click', (e) => {
+            if (e.target === sizeEditor) {
+                loadCardSize();
+                sizeEditor.style.display = 'none';
+            }
+        });
+    }
+    // ==========================================
     
     // Elements
     const background = document.getElementById('background');
@@ -582,6 +940,7 @@
     const preview1 = document.getElementById('preview-1');
     const preview2 = document.getElementById('preview-2');
     const cardIndicator = document.getElementById('card-indicator');
+    const resetSizeBtn = document.getElementById('reset-size');
 
     // Initialize card properties
     let posX = window.innerWidth / 2 - card.offsetWidth / 2;
@@ -624,13 +983,6 @@
     let indicatorTimeout = null;
     let cardAppearTimeout = null;
     
-    // STORAGE FUNCTIONS
-    const STORAGE_KEYS = {
-        image1: 'magic_card_image_1',
-        image2: 'magic_card_image_2',
-        background: 'magic_card_background'
-    };
-
     function saveToStorage() {
         localStorage.setItem(STORAGE_KEYS.image1, cardImages.image1);
         localStorage.setItem(STORAGE_KEYS.image2, cardImages.image2);
@@ -646,6 +998,9 @@
         if (bg) background.style.backgroundImage = `url(${bg})`;
 
         updatePreviews();
+        
+        // Load saved size
+        loadCardSize();
         
         // Preload images setelah load
         setTimeout(preloadImages, 100);
@@ -675,6 +1030,18 @@
     
     // Initialize sensor
     initSensor();
+    
+    // Initialize size editor
+    initSizeEditor();
+    
+    // Reset size button
+    resetSizeBtn.addEventListener('click', () => {
+        cardScale = 1.2;
+        cardMaxWidth = 300;
+        saveCardSize();
+        applyCardSize();
+        alert('Card size reset to default');
+    });
     
     // Touch events for swipe up to open settings
     let startYPos = 0;
@@ -1220,7 +1587,7 @@
     }
     
     function updateCardTransform() {
-        card.style.transform = `translate(${posX}px, ${posY}px)`;
+        card.style.transform = `translate(${posX}px, ${posY}px) scale(${cardScale})`;
     }
     
     // Handle window resize
