@@ -64,7 +64,7 @@
             opacity: 0;
             visibility: hidden;
             transform-origin: center;
-            transform: scale(1.2); /* 🔥 BESARKAN SEDIKIT  1.1 1.15*/
+            transform: scale(2.0); /* 🔥 BESARKAN SEDIKIT  1.1 1.15*/
         }
 
         .card-visible {
@@ -123,12 +123,6 @@
             align-items: center;
             justify-content: center;
             background: #333;
-            cursor: pointer;
-            transition: border-color 0.3s;
-        }
-        
-        .upload-preview:hover {
-            border-color: #4CAF50;
         }
         
         .upload-preview img {
@@ -270,166 +264,6 @@
         #card-indicator.visible {
             opacity: 1;
         }
-        
-        /* ========== SIZE EDITOR MODAL ========== */
-        #size-editor-modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 9999;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        
-        #size-editor-container {
-            background: rgba(30,30,30,0.95);
-            padding: 25px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-        
-        .size-preview-area {
-            width: 100%;
-            height: 250px;
-            background: rgba(0,0,0,0.5);
-            border-radius: 10px;
-            margin: 20px 0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            overflow: hidden;
-            position: relative;
-            border: 2px dashed rgba(255,255,255,0.2);
-        }
-        
-        #size-preview-card {
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-            transition: transform 0.2s;
-            cursor: grab;
-            user-select: none;
-            -webkit-user-drag: none;
-        }
-        
-        #size-preview-card:active {
-            cursor: grabbing;
-        }
-        
-        .size-controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .size-slider {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-        
-        .size-slider label {
-            min-width: 80px;
-            font-size: 14px;
-        }
-        
-        .size-slider input[type="range"] {
-            flex: 1;
-            height: 6px;
-            -webkit-appearance: none;
-            background: rgba(255,255,255,0.1);
-            border-radius: 3px;
-            outline: none;
-        }
-        
-        .size-slider input[type="range"]::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-        }
-        
-        .size-slider input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #4CAF50;
-            cursor: pointer;
-            border: none;
-        }
-        
-        .size-value {
-            min-width: 40px;
-            text-align: center;
-            font-weight: bold;
-            color: #4CAF50;
-        }
-        
-        .size-preset-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-        
-        .size-preset {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.2);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-        
-        .size-preset:hover {
-            background: rgba(255,255,255,0.2);
-        }
-        
-        .size-preset.active {
-            background: #4CAF50;
-            border-color: #4CAF50;
-        }
-        
-        .size-modal-buttons {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-            justify-content: center;
-        }
-        
-        .size-modal-buttons button {
-            min-width: 100px;
-        }
-        
-        #cancel-size {
-            background: #f44336;
-        }
-        
-        #save-size {
-            background: #4CAF50;
-        }
-        
-        .size-info {
-            font-size: 12px;
-            color: #888;
-            text-align: center;
-            margin-top: 10px;
-            font-style: italic;
-        }
     </style>
 </head>
 <body>
@@ -438,45 +272,6 @@
     
     <!-- TITIK INDIKATOR -->
     <div id="card-indicator"></div>
-    
-    <!-- SIZE EDITOR MODAL -->
-    <div id="size-editor-modal">
-        <div id="size-editor-container">
-            <h2 style="text-align: center; margin-bottom: 20px;">Adjust Card Size</h2>
-            
-            <div class="size-preview-area">
-                <img id="size-preview-card" src="" alt="Card Preview">
-            </div>
-            
-            <div class="size-controls">
-                <div class="size-slider">
-                    <label>Scale:</label>
-                    <input type="range" id="scale-slider" min="0.5" max="3" step="0.1" value="1.2">
-                    <div class="size-value" id="scale-value">1.2x</div>
-                </div>
-                
-                <div class="size-slider">
-                    <label>Width:</label>
-                    <input type="range" id="width-slider" min="150" max="500" step="10" value="300">
-                    <div class="size-value" id="width-value">300px</div>
-                </div>
-            </div>
-            
-            <div class="size-preset-buttons">
-                <div class="size-preset" data-scale="0.8" data-width="200">Small</div>
-                <div class="size-preset active" data-scale="1.2" data-width="300">Medium</div>
-                <div class="size-preset" data-scale="1.5" data-width="350">Large</div>
-                <div class="size-preset" data-scale="2.0" data-width="400">X-Large</div>
-            </div>
-            
-            <p class="size-info">Drag the card in preview area to test the size</p>
-            
-            <div class="size-modal-buttons">
-                <button id="cancel-size">Cancel</button>
-                <button id="save-size">Save Size</button>
-            </div>
-        </div>
-    </div>
     
     <div id="settings">
         <h2>Magic Card Settings</h2>
@@ -490,7 +285,7 @@
         </div>
         
         <div class="setting-section">
-            <h3>Card Images & Size</h3>
+            <h3>Card Images</h3>
             <p>Upload two images for card transformation</p>
             
             <div class="image-upload-row">
@@ -499,8 +294,7 @@
                         Card Image 1
                     </button>
                     <input type="file" id="card-upload-1" accept="image/*" data-index="1">
-                    <div class="upload-preview" id="preview-1" onclick="openSizeEditor(1)"></div>
-                    <small style="margin-top: 5px; color: #aaa; font-size: 12px;">Tap preview to adjust size</small>
+                    <div class="upload-preview" id="preview-1"></div>
                 </div>
 
                 <div class="upload-label">
@@ -508,15 +302,13 @@
                         Card Image 2
                     </button>
                     <input type="file" id="card-upload-2" accept="image/*" data-index="2">
-                    <div class="upload-preview" id="preview-2" onclick="openSizeEditor(2)"></div>
-                    <small style="margin-top: 5px; color: #aaa; font-size: 12px;">Tap preview to adjust size</small>
+                    <div class="upload-preview" id="preview-2"></div>
                 </div>
             </div>
             
             <div style="margin-top: 15px;">
                 <button id="default-cards">Use Default Cards</button>
                 <button id="swap-cards">Swap Images 1↔2</button>
-                <button id="reset-size" style="background: #FF9800;">Reset Size</button>
             </div>
             
             <div style="margin-top: 15px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;">
@@ -524,13 +316,7 @@
                     <strong>How it works:</strong><br>
                     1. Double tap to summon card<br>
                     2. Card shows Image 1<br>
-                    3. After 5 seconds, card flips to Image 2<br>
-                    <br>
-                    <strong>Size Adjustment:</strong><br>
-                    • Tap card preview to open size editor<br>
-                    • Drag card in preview to test<br>
-                    • Use sliders or presets<br>
-                    • Changes apply to both cards
+                    3. After 5 seconds, card flips to Image 2
                 </small>
             </div>
         </div>
@@ -707,225 +493,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     }
     // ================================================================
     
-    // ========== CARD SIZE MANAGEMENT ==========
-    // Storage untuk ukuran kartu
-    const STORAGE_KEYS = {
-        image1: 'magic_card_image_1',
-        image2: 'magic_card_image_2',
-        background: 'magic_card_background',
-        cardScale: 'magic_card_scale',
-        cardWidth: 'magic_card_width'
-    };
-
-    // Default size values
-    let cardScale = 1.2;
-    let cardMaxWidth = 300;
-    let editingCardIndex = 1;
-    
-    // Load saved size dari localStorage
-    function loadCardSize() {
-        const savedScale = localStorage.getItem(STORAGE_KEYS.cardScale);
-        const savedWidth = localStorage.getItem(STORAGE_KEYS.cardWidth);
-        
-        if (savedScale) cardScale = parseFloat(savedScale);
-        if (savedWidth) cardMaxWidth = parseInt(savedWidth);
-        
-        // Apply size ke kartu utama
-        applyCardSize();
-    }
-    
-    // Save size ke localStorage
-    function saveCardSize() {
-        localStorage.setItem(STORAGE_KEYS.cardScale, cardScale.toString());
-        localStorage.setItem(STORAGE_KEYS.cardWidth, cardMaxWidth.toString());
-    }
-    
-    // Apply size ke kartu utama
-    function applyCardSize() {
-        if (card) {
-            card.style.transform = `scale(${cardScale})`;
-            card.style.maxWidth = `${cardMaxWidth}px`;
-        }
-    }
-    
-    // Open size editor modal
-    function openSizeEditor(cardIndex) {
-        editingCardIndex = cardIndex;
-        const sizeEditor = document.getElementById('size-editor-modal');
-        const previewCard = document.getElementById('size-preview-card');
-        
-        // Set image untuk preview
-        previewCard.src = cardImages[`image${cardIndex}`];
-        
-        // Set slider values
-        document.getElementById('scale-slider').value = cardScale;
-        document.getElementById('width-slider').value = cardMaxWidth;
-        updateSliderValues();
-        
-        // Update preset buttons
-        updatePresetButtons();
-        
-        // Apply initial size ke preview
-        updatePreviewCard();
-        
-        // Show modal
-        sizeEditor.style.display = 'flex';
-        
-        // Setup drag untuk preview card
-        setupPreviewDrag();
-    }
-    
-    // Update slider value displays
-    function updateSliderValues() {
-        document.getElementById('scale-value').textContent = `${cardScale.toFixed(1)}x`;
-        document.getElementById('width-value').textContent = `${cardMaxWidth}px`;
-    }
-    
-    // Update preset buttons
-    function updatePresetButtons() {
-        const presets = document.querySelectorAll('.size-preset');
-        presets.forEach(preset => {
-            const presetScale = parseFloat(preset.dataset.scale);
-            const presetWidth = parseInt(preset.dataset.width);
-            
-            if (Math.abs(presetScale - cardScale) < 0.1 && 
-                Math.abs(presetWidth - cardMaxWidth) < 10) {
-                preset.classList.add('active');
-            } else {
-                preset.classList.remove('active');
-            }
-        });
-    }
-    
-    // Update preview card dengan size terkini
-    function updatePreviewCard() {
-        const previewCard = document.getElementById('size-preview-card');
-        previewCard.style.transform = `scale(${cardScale})`;
-        previewCard.style.maxWidth = `${cardMaxWidth}px`;
-    }
-    
-    // Setup drag untuk preview card
-    function setupPreviewDrag() {
-        const previewCard = document.getElementById('size-preview-card');
-        const previewArea = document.querySelector('.size-preview-area');
-        
-        let isDragging = false;
-        let startX, startY;
-        let startLeft, startTop;
-        
-        // Reset position
-        previewCard.style.left = '0';
-        previewCard.style.top = '0';
-        previewCard.style.position = 'relative';
-        
-        previewCard.addEventListener('touchstart', (e) => {
-            if (e.touches.length === 1) {
-                isDragging = true;
-                startX = e.touches[0].clientX;
-                startY = e.touches[0].clientY;
-                
-                const rect = previewCard.getBoundingClientRect();
-                const areaRect = previewArea.getBoundingClientRect();
-                
-                startLeft = rect.left - areaRect.left;
-                startTop = rect.top - areaRect.top;
-                
-                e.preventDefault();
-            }
-        });
-        
-        document.addEventListener('touchmove', (e) => {
-            if (isDragging && e.touches.length === 1) {
-                const deltaX = e.touches[0].clientX - startX;
-                const deltaY = e.touches[0].clientY - startY;
-                
-                const newLeft = startLeft + deltaX;
-                const newTop = startTop + deltaY;
-                
-                // Batasi gerakan dalam area preview
-                const maxX = previewArea.offsetWidth - previewCard.offsetWidth;
-                const maxY = previewArea.offsetHeight - previewCard.offsetHeight;
-                
-                previewCard.style.left = `${Math.max(0, Math.min(maxX, newLeft))}px`;
-                previewCard.style.top = `${Math.max(0, Math.min(maxY, newTop))}px`;
-                
-                e.preventDefault();
-            }
-        });
-        
-        document.addEventListener('touchend', () => {
-            isDragging = false;
-        });
-    }
-    
-    // Initialize size editor events
-    function initSizeEditor() {
-        const sizeEditor = document.getElementById('size-editor-modal');
-        const scaleSlider = document.getElementById('scale-slider');
-        const widthSlider = document.getElementById('width-slider');
-        const cancelBtn = document.getElementById('cancel-size');
-        const saveBtn = document.getElementById('save-size');
-        const presetButtons = document.querySelectorAll('.size-preset');
-        
-        // Scale slider event
-        scaleSlider.addEventListener('input', (e) => {
-            cardScale = parseFloat(e.target.value);
-            updateSliderValues();
-            updatePreviewCard();
-            updatePresetButtons();
-        });
-        
-        // Width slider event
-        widthSlider.addEventListener('input', (e) => {
-            cardMaxWidth = parseInt(e.target.value);
-            updateSliderValues();
-            updatePreviewCard();
-            updatePresetButtons();
-        });
-        
-        // Preset button events
-        presetButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                cardScale = parseFloat(button.dataset.scale);
-                cardMaxWidth = parseInt(button.dataset.width);
-                
-                scaleSlider.value = cardScale;
-                widthSlider.value = cardMaxWidth;
-                
-                updateSliderValues();
-                updatePreviewCard();
-                updatePresetButtons();
-            });
-        });
-        
-        // Cancel button
-        cancelBtn.addEventListener('click', () => {
-            // Restore original size
-            loadCardSize();
-            sizeEditor.style.display = 'none';
-        });
-        
-        // Save button
-        saveBtn.addEventListener('click', () => {
-            // Save size
-            saveCardSize();
-            applyCardSize();
-            sizeEditor.style.display = 'none';
-            
-            // Show confirmation
-            alert(`Card size saved:\nScale: ${cardScale.toFixed(1)}x\nMax Width: ${cardMaxWidth}px`);
-        });
-        
-        // Close modal ketika klik di luar
-        sizeEditor.addEventListener('click', (e) => {
-            if (e.target === sizeEditor) {
-                loadCardSize();
-                sizeEditor.style.display = 'none';
-            }
-        });
-    }
-    // ==========================================
-    
     // Elements
     const background = document.getElementById('background');
     const card = document.getElementById('card');
@@ -940,7 +507,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     const preview1 = document.getElementById('preview-1');
     const preview2 = document.getElementById('preview-2');
     const cardIndicator = document.getElementById('card-indicator');
-    const resetSizeBtn = document.getElementById('reset-size');
 
     // Initialize card properties
     let posX = window.innerWidth / 2 - card.offsetWidth / 2;
@@ -983,6 +549,13 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     let indicatorTimeout = null;
     let cardAppearTimeout = null;
     
+    // STORAGE FUNCTIONS
+    const STORAGE_KEYS = {
+        image1: 'magic_card_image_1',
+        image2: 'magic_card_image_2',
+        background: 'magic_card_background'
+    };
+
     function saveToStorage() {
         localStorage.setItem(STORAGE_KEYS.image1, cardImages.image1);
         localStorage.setItem(STORAGE_KEYS.image2, cardImages.image2);
@@ -998,9 +571,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         if (bg) background.style.backgroundImage = `url(${bg})`;
 
         updatePreviews();
-        
-        // Load saved size
-        loadCardSize();
         
         // Preload images setelah load
         setTimeout(preloadImages, 100);
@@ -1030,18 +600,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     
     // Initialize sensor
     initSensor();
-    
-    // Initialize size editor
-    initSizeEditor();
-    
-    // Reset size button
-    resetSizeBtn.addEventListener('click', () => {
-        cardScale = 1.2;
-        cardMaxWidth = 300;
-        saveCardSize();
-        applyCardSize();
-        alert('Card size reset to default');
-    });
     
     // Touch events for swipe up to open settings
     let startYPos = 0;
@@ -1587,7 +1145,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     }
     
     function updateCardTransform() {
-        card.style.transform = `translate(${posX}px, ${posY}px) scale(${cardScale})`;
+        card.style.transform = `translate(${posX}px, ${posY}px)`;
     }
     
     // Handle window resize
