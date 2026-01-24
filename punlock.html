@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Masukkan PIN</title>
+
+    <meta name="theme-color" content="#000000">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <style>
+        html,
+        body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background: #000;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            color: #fff;
+            overflow: hidden;
+        }
+
+        /* ===== TOP ===== */
+        .top-lock {
+            position: absolute;
+            top: 0;
+            width: 100%;
+            height: 140px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .top-lock svg {
+            width: 220px;
+            height: 80px;
+            margin-top: 10px;
+        }
+
+        .lock-icon {
+            position: absolute;
+            top: 48px;
+            font-size: 26px;
+            opacity: .9;
+        }
+
+        /* ===== CONTENT ===== */
+        .container {
+            position: absolute;
+            top: 160px;
+            width: 100%;
+            text-align: center;
+        }
+
+        .title {
+            font-size: 22px;
+            margin-bottom: 6px;
+            transition: .3s;
+        }
+
+        .subtitle {
+            font-size: 14px;
+            opacity: .7;
+            transition: .3s;
+        }
+
+        /* HIDE TEXT */
+        .hidden {
+            opacity: 0;
+            height: 0;
+            margin: 0;
+        }
+
+        /* ===== PIN DOTS ===== */
+        .pin-dots {
+            display: flex;
+            justify-content: center;
+            gap: 14px;
+            margin: 20px 0 30px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .25);
+        }
+
+        .dot.filled {
+            background: #fff;
+        }
+
+        /* ===== KEYPAD ===== */
+        .keypad {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 18px 28px;
+            padding: 0 40px;
+        }
+
+        .key {
+            width: 74px;
+            height: 74px;
+            margin: auto;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, .18);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-size: 26px;
+            position: relative;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .key span {
+            font-size: 10px;
+            margin-top: 2px;
+            letter-spacing: 1px;
+            opacity: .8;
+        }
+
+        /* ===== RIPPLE ===== */
+        .key::after {
+            content: "";
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: rgba(255, 255, 255, .5);
+            border-radius: 50%;
+            transform: scale(1);
+            opacity: 0;
+        }
+
+        .key.active::after {
+            animation: ripple .45s ease-out;
+        }
+
+        @keyframes ripple {
+            from {
+                opacity: .6;
+                transform: scale(1);
+            }
+
+            to {
+                opacity: 0;
+                transform: scale(18);
+            }
+        }
+
+        /* ===== BOTTOM ===== */
+        .bottom-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            align-items: center;
+            margin-top: 18px;
+        }
+
+        .backspace {
+            font-size: 22px;
+            opacity: .9;
+        }
+
+        .ok {
+            font-size: 18px;
+            opacity: .35;
+        }
+
+        /* ===== EMERGENCY ===== */
+        .emergency {
+            position: absolute;
+            bottom: 90px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255, 255, 255, .18);
+            padding: 10px 26px;
+            border-radius: 30px;
+            font-size: 14px;
+        }
+
+        /* ===== NAV ===== */
+        .nav {
+            position: absolute;
+            bottom: 30px;
+            right: 20px;
+            font-size: 26px;
+            opacity: .8;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="top-lock">
+        <svg viewBox="0 0 300 120">
+            <path d="M40 0 Q150 80 260 0" stroke="white" stroke-width="4" fill="none" opacity=".8" />
+        </svg>
+        <div class="lock-icon">🔒</div>
+    </div>
+
+    <div class="container">
+        <div id="title" class="title">Masukkan PIN</div>
+        <div id="subtitle" class="subtitle">PIN Anda harus terdiri dari setidaknya 4 digit.</div>
+
+        <div class="pin-dots" id="dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+
+        <div class="keypad">
+            <div class="key" data-num="1">1</div>
+            <div class="key" data-num="2">2<span>ABC</span></div>
+            <div class="key" data-num="3">3<span>DEF</span></div>
+
+            <div class="key" data-num="4">4<span>GHI</span></div>
+            <div class="key" data-num="5">5<span>JKL</span></div>
+            <div class="key" data-num="6">6<span>MNO</span></div>
+
+            <div class="key" data-num="7">7<span>PQRS</span></div>
+            <div class="key" data-num="8">8<span>TUV</span></div>
+            <div class="key" data-num="9">9<span>WXYZ</span></div>
+        </div>
+
+        <div class="bottom-row">
+            <div class="backspace key" id="del">⌫</div>
+            <div class="key" data-num="0">0</div>
+            <div class="ok">OK</div>
+        </div>
+    </div>
+
+    <div class="emergency">Panggilan darurat</div>
+    <div class="nav">‹</div>
+
+    <script>
+        let pin = "";
+        const maxPin = 4;
+        const dots = document.querySelectorAll(".dot");
+        const title = document.getElementById("title");
+        const subtitle = document.getElementById("subtitle");
+
+        document.querySelectorAll(".key").forEach(key => {
+            key.addEventListener("touchstart", () => {
+                key.classList.add("active");
+                setTimeout(() => key.classList.remove("active"), 300);
+
+                if (key.dataset.num) {
+                    if (pin.length < maxPin) {
+                        pin += key.dataset.num;
+                        updateDots();
+                        hideText();
+                    }
+                }
+            });
+        });
+
+        document.getElementById("del").addEventListener("touchstart", () => {
+            pin = pin.slice(0, -1);
+            updateDots();
+            if (pin.length === 0) showText();
+        });
+
+        function updateDots() {
+            dots.forEach((d, i) => {
+                d.classList.toggle("filled", i < pin.length);
+            });
+        }
+
+        function hideText() {
+            title.classList.add("hidden");
+            subtitle.classList.add("hidden");
+        }
+
+        function showText() {
+            title.classList.remove("hidden");
+            subtitle.classList.remove("hidden");
+        }
+    </script>
+
+</body>
+
+</html>
