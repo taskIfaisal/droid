@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Magic Card Trick</title>
     
-    <!-- ========== PWA META TAGS ========== -->
+    <!-- ========== PWA META TAGS UNTUK INSTALL KE LAYAR UTAMA ========== -->
     <meta name="theme-color" content="#000000">
-    <link id="manifest-placeholder" rel="manifest" href="data:application/manifest+json;base64,eyJuYW1lIjoiTWFnaWMgQ2FyZCBUcmljayIsInNob3J0X25hbWUiOiJNYWdpYyBDYXJkIiwiZGVzY3JpcHRpb24iOiJNYWdpY2FsIGNhcmQgdHJhbnNmb3JtYXRpb24gYXBwIHdpdGggdGlsdCBjb250cm9scyIsInN0YXJ0X3VybCI6Ii4vc2xpZGVjYXJkcm9pZC5odG1sIiwiZGlzcGxheSI6InN0YW5kYWxvbmUiLCJiYWNrZ3JvdW5kX2NvbG9yIjoiIzAwMDAwMCIsInRoZW1lX2NvbG9yIjoiIzAwMDAwMCIsIm9yaWVudGF0aW9uIjoicG9ydHJhaXQiLCJpY29ucyI6W3sic3JjIjoiLi9pY29uL3NsaWRlLTUxMng1MTIucG5nIiwic2l6ZXMiOiI1MTJ4NTEyIiwidHlwZSI6ImltYWdlL3BuZyIsInB1cnBvc2UiOiJhbnkgbWFza2FibGUifSx7InNyYyI6Ii4vaWNvbi9zbGlkZS0xOTJ4MTkyLnBuZyIsInNpemVzIjoiMTkyeDE5MiIsInR5cGUiOiJpbWFnZS9wbmciLCJwdXJwb3NlIjoiYW55IG1hc2thYmxlIn1dfQ==">
     <meta name="description" content="Magic Card Trick - A magical card transformation app">
-    <!-- =================================== -->
+    <link rel="manifest" href="./manifest.json">
+    <!-- =============================================================== -->
     
     <link rel="apple-touch-icon" href="./icon/slide-512x512.png">
     <link rel="apple-touch-startup-image" href="./icon/slide-512x512.png">
@@ -83,7 +83,7 @@
         }
 
         .card-moving {
-            transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
+             transition: transform 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94), opacity 0.3s ease;
         }
         
         #settings {
@@ -263,40 +263,9 @@
         #card-indicator.visible {
             opacity: 1;
         }
-        
-        /* ========== PWA INSTALL BUTTON ========== */
-        #install-button {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #2196F3;
-            color: white;
-            border: none;
-            padding: 10px 15px;
-            border-radius: 5px;
-            cursor: pointer;
-            z-index: 100;
-            font-size: 14px;
-            display: none;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-        }
-        
-        #install-button.visible {
-            display: block;
-        }
-        
-        #install-button:hover {
-            background: #1976D2;
-        }
-        /* ======================================= */
     </style>
 </head>
 <body>
-    <!-- ========== PWA INSTALL BUTTON ========== -->
-    <button id="install-button" class="hidden">
-        📲 Install App
-    </button>
-    
     <div id="background"></div>
     <img id="card" src="https://deckofcardsapi.com/static/img/AS.png" alt="Magic Card">
     
@@ -362,211 +331,166 @@
     </button>
 
     <script>
-    // ========== INLINE SERVICE WORKER ==========
-    // Generate dynamic service worker Blob
-    function createServiceWorker() {
-        const swCode = `
-            const CACHE_NAME = 'magic-card-v1';
-            
-            self.addEventListener('install', event => {
-                event.waitUntil(
-                    caches.open(CACHE_NAME)
-                        .then(cache => {
-                            console.log('✅ Cache opened');
-                            // Cache the main page and critical assets
-                            return cache.addAll([
-                                './slidecard.html',
-                                './icon/slide-512x512.png',
-                                './icon/slide-192x192.png'
-                            ]);
-                        })
-                );
-            });
-            
-            self.addEventListener('activate', event => {
-                event.waitUntil(
-                    caches.keys().then(cacheNames => {
-                        return Promise.all(
-                            cacheNames.map(cacheName => {
-                                if (cacheName !== CACHE_NAME) {
-                                    console.log('🗑️ Deleting old cache:', cacheName);
-                                    return caches.delete(cacheName);
-                                }
-                            })
-                        );
-                    })
-                );
-            });
-            
-            self.addEventListener('fetch', event => {
-                // Skip non-GET requests
-                if (event.request.method !== 'GET') return;
-                
-                event.respondWith(
-                    caches.match(event.request)
-                        .then(response => {
-                            // Return cached version if found
-                            if (response) {
-                                return response;
-                            }
-                            
-                            // Otherwise fetch from network
-                            return fetch(event.request)
-                                .then(response => {
-                                    // Don't cache if not a valid response
-                                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                                        return response;
-                                    }
-                                    
-                                    // Clone the response
-                                    const responseToCache = response.clone();
-                                    
-                                    // Cache the new response
-                                    caches.open(CACHE_NAME)
-                                        .then(cache => {
-                                            cache.put(event.request, responseToCache);
-                                        });
-                                    
-                                    return response;
-                                });
-                        })
-                        .catch(() => {
-                            // If both cache and network fail, show offline page or fallback
-                            return new Response('You are offline', {
-                                status: 503,
-                                statusText: 'Service Unavailable',
-                                headers: new Headers({
-                                    'Content-Type': 'text/plain'
-                                })
-                            });
-                        })
-                );
-            });
-        `;
-        
-        return new Blob([swCode], { type: 'application/javascript' });
-    }
+    // ========== PWA INSTALL FUNCTIONALITY UNTUK LAYAR UTAMA ==========
+    // Tambahkan di bagian paling atas JavaScript
     
-    // ========== DYNAMIC MANIFEST ==========
-    function createManifest() {
-        const manifest = {
-            "name": "Magic Card Trick",
-            "short_name": "Magic Card",
-            "description": "Magical card transformation app with tilt controls",
-            "start_url": "./slidecard.html",
-            "display": "standalone",
-            "background_color": "#000000",
-            "theme_color": "#000000",
-            "orientation": "portrait",
-            "icons": [
-                {
-                    "src": "./icon/slide-512x512.png",
-                    "sizes": "512x512",
-                    "type": "image/png",
-                    "purpose": "any maskable"
-                },
-                {
-                    "src": "./icon/slide-192x192.png",
-                    "sizes": "192x192",
-                    "type": "image/png",
-                    "purpose": "any maskable"
-                }
-            ]
-        };
-        
-        // Convert to base64
-        const manifestString = JSON.stringify(manifest);
-        const base64Manifest = btoa(manifestString);
-        
-        // Update manifest link
-        const manifestLink = document.getElementById('manifest-placeholder');
-        manifestLink.href = `data:application/manifest+json;base64,${base64Manifest}`;
-        
-        return manifest;
-    }
+    // Cek apakah sudah dalam mode standalone (sudah diinstall)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone === true;
     
-    // ========== PWA INSTALL FUNCTIONALITY ==========
-    let deferredPrompt;
-    const installButton = document.getElementById('install-button');
-    
-    // Create dynamic manifest on load
-    createManifest();
-    
-    // Register Service Worker
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            // Create service worker Blob URL
-            const swBlob = createServiceWorker();
-            const swURL = URL.createObjectURL(swBlob);
+    if (!isStandalone) {
+        // Tambahkan install prompt jika belum diinstall
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
             
-            navigator.serviceWorker.register(swURL)
-                .then(registration => {
-                    console.log('✅ Service Worker registered:', registration.scope);
+            // Tampilkan toast notification untuk install
+            setTimeout(() => {
+                showInstallToast();
+            }, 3000);
+        });
+        
+        // Toast notification untuk install
+        function showInstallToast() {
+            const toast = document.createElement('div');
+            toast.id = 'install-toast';
+            toast.innerHTML = `
+                <div style="background: rgba(0,0,0,0.8); color: white; padding: 12px 16px; border-radius: 8px; 
+                     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
+                     z-index: 10000; text-align: center; max-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
+                    <div style="margin-bottom: 8px; font-weight: bold;">✨ Install Magic Card Trick</div>
+                    <div style="font-size: 14px; margin-bottom: 10px;">Install ke layar utama untuk pengalaman terbaik!</div>
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <button id="install-now" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 14px; cursor: pointer;">
+                            Install Now
+                        </button>
+                        <button id="dismiss-toast" style="background: transparent; color: #aaa; border: 1px solid #666; padding: 6px 12px; border-radius: 4px; font-size: 14px; cursor: pointer;">
+                            Nanti
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(toast);
+            
+            // Event handler untuk tombol install
+            document.getElementById('install-now').addEventListener('click', async () => {
+                if (deferredPrompt) {
+                    // Show the install prompt
+                    deferredPrompt.prompt();
                     
-                    // Check for updates
-                    registration.addEventListener('updatefound', () => {
-                        console.log('🔄 Service Worker update found');
-                    });
-                })
-                .catch(error => {
-                    console.log('❌ Service Worker registration failed:', error);
-                });
+                    // Wait for the user to respond to the prompt
+                    const { outcome } = await deferredPrompt.userChoice;
+                    
+                    if (outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    
+                    deferredPrompt = null;
+                } else {
+                    // Jika prompt tidak tersedia, beri instruksi manual
+                    alert(`Untuk install Magic Card Trick ke layar utama:
+
+1. Tap menu Chrome (⋮) di pojok kanan atas
+2. Pilih "Add to Home Screen"
+3. Tap "Add"
+
+Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
+                }
+                
+                // Hapus toast
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            });
+            
+            // Event handler untuk dismiss
+            document.getElementById('dismiss-toast').addEventListener('click', () => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+                // Simpan di localStorage agar tidak muncul lagi hari ini
+                localStorage.setItem('installToastDismissed', Date.now());
+            });
+            
+            // Auto hide setelah 15 detik
+            setTimeout(() => {
+                if (toast.parentNode) {
+                    toast.parentNode.removeChild(toast);
+                }
+            }, 15000);
+        }
+        
+        // Cek apakah sudah pernah dismiss hari ini
+        const lastDismiss = localStorage.getItem('installToastDismissed');
+        const oneDay = 24 * 60 * 60 * 1000;
+        
+        if (!lastDismiss || (Date.now() - parseInt(lastDismiss)) > oneDay) {
+            // Tampilkan toast setelah 3 detik
+            setTimeout(showInstallToast, 3000);
+        }
+        
+        // Deteksi saat app diinstall
+        window.addEventListener('appinstalled', () => {
+            console.log('Magic Card Trick berhasil diinstall ke layar utama!');
+            // Hapus toast jika masih ada
+            const toast = document.getElementById('install-toast');
+            if (toast && toast.parentNode) {
+                toast.parentNode.removeChild(toast);
+            }
         });
     }
     
-    // Event listener for beforeinstallprompt
-    window.addEventListener('beforeinstallprompt', (e) => {
-        console.log('PWA install prompt available');
-        // Prevent Chrome 67 and earlier from automatically showing the prompt
-        e.preventDefault();
-        // Stash the event so it can be triggered later
-        deferredPrompt = e;
-        
-        // Show install button
-        installButton.classList.add('visible');
-        
-        // Auto hide after 10 seconds
-        setTimeout(() => {
-            installButton.classList.remove('visible');
-        }, 10000);
-    });
-    
-    // Install button click handler
-    installButton.addEventListener('click', async () => {
-        if (!deferredPrompt) return;
-        
-        // Show the install prompt
-        deferredPrompt.prompt();
-        
-        // Wait for the user to respond to the prompt
-        const { outcome } = await deferredPrompt.userChoice;
-        
-        console.log(`User response to the install prompt: ${outcome}`);
-        
-        // Hide the install button
-        installButton.classList.remove('visible');
-        
-        // Clear the deferredPrompt variable
-        deferredPrompt = null;
-    });
-    
-    // Detect if app is already installed
-    window.addEventListener('appinstalled', () => {
-        console.log('PWA was installed');
-        installButton.classList.remove('visible');
-        deferredPrompt = null;
-        
-        // Show success message
-        alert('✅ Magic Card Trick installed successfully! You can now find it on your home screen.');
-    });
-    
-    // Check if app is running in standalone mode (already installed)
-    if (window.matchMedia('(display-mode: standalone)').matches || 
-        window.navigator.standalone === true) {
-        console.log('App is running in standalone mode');
-        installButton.classList.remove('visible');
+    // Register Service Worker untuk offline support
+    if ('serviceWorker' in navigator && !isStandalone) {
+        window.addEventListener('load', () => {
+            // Simple service worker untuk cache
+            const swCode = `
+                const CACHE_NAME = 'magic-card-v1';
+                
+                self.addEventListener('install', (event) => {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                return cache.addAll([
+                                    './slidecard.html',
+                                    './icon/slide-512x512.png'
+                                ]);
+                            })
+                    );
+                });
+                
+                self.addEventListener('fetch', (event) => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                return response || fetch(event.request);
+                            })
+                    );
+                });
+            `;
+            
+            try {
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl, { scope: './' })
+                    .then(registration => {
+                        console.log('Service Worker registered untuk offline support');
+                    })
+                    .catch(error => {
+                        console.log('Service Worker registration failed:', error);
+                    });
+            } catch (error) {
+                console.log('Error creating Service Worker:', error);
+            }
+        });
     }
-    // ================================================
+    // ================================================================
     
     // Elements
     const background = document.getElementById('background');
