@@ -2,116 +2,22 @@
 <html>
 <head>
     <script>
-        // REDIRECT SUPER CEPAT - MULTI TECHNIQUE
-        (function() {
-            'use strict';
-            
-            const ua = navigator.userAgent || navigator.vendor || window.opera;
-            const isAndroid = /android/i.test(ua);
-            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
-            
-            // SEMUA CARA UNTUK BUKA YOUTUBE APP
-            const techniques = [
-                // TECHNIQUE 1: Intent Android (paling efektif)
-                function() {
-                    if (isAndroid) {
-                        window.location.href = 'intent://youtube.com/#Intent;package=com.google.android.youtube;scheme=https;S.browser_fallback_url=https%3A%2F%2Fwww.youtube.com;end';
-                        return true;
-                    }
-                    return false;
-                },
-                
-                // TECHNIQUE 2: Deep link universal
-                function() {
-                    window.location.href = 'vnd.youtube://';
-                    return true;
-                },
-                
-                // TECHNIQUE 3: iOS deep link
-                function() {
-                    if (isIOS) {
-                        window.location.href = 'youtube://';
-                        return true;
-                    }
-                    return false;
-                },
-                
-                // TECHNIQUE 4: Iframe trick
-                function() {
-                    const iframe = document.createElement('iframe');
-                    iframe.style.cssText = 'display:none !important;';
-                    iframe.src = 'vnd.youtube://';
-                    document.body.appendChild(iframe);
-                    return true;
-                },
-                
-                // TECHNIQUE 5: Window open
-                function() {
-                    window.open('vnd.youtube://', '_self');
-                    return true;
-                },
-                
-                // TECHNIQUE 6: Form submit
-                function() {
-                    const form = document.createElement('form');
-                    form.method = 'GET';
-                    form.action = 'vnd.youtube://';
-                    form.style.display = 'none';
-                    document.body.appendChild(form);
-                    form.submit();
-                    return true;
-                },
-                
-                // TECHNIQUE 7: Fallback ke web
-                function() {
-                    window.location.replace('https://www.youtube.com');
-                    return true;
-                }
-            ];
-            
-            // EKSEKUSI SEMUA TECHNIQUE SECARA BERTURUTAN
-            function executeAllTechniques() {
-                let executed = false;
-                
-                for (let i = 0; i < techniques.length; i++) {
-                    if (!executed) {
-                        try {
-                            executed = techniques[i]();
-                        } catch(e) {
-                            // Continue ke technique berikutnya
-                        }
-                    }
-                }
-                
-                // Final fallback
-                if (!executed) {
-                    window.location.href = 'https://www.youtube.com';
-                }
-            }
-            
-            // Blur handler - jika app terbuka
-            window.addEventListener('blur', function() {
-                setTimeout(function() {
-                    try {
-                        window.close();
-                    } catch(e) {}
-                }, 100);
-            });
-            
-            // Eksekusi segera
-            if (document.readyState === 'loading') {
-                document.addEventListener('DOMContentLoaded', executeAllTechniques);
-            } else {
-                executeAllTechniques();
-            }
-            
-            // Juga eksekusi sekarang
-            executeAllTechniques();
-            
-        })();
+        // LANGSUNG REDIRECT TANPA TUNGGU
+        window.location.href = 'intent://youtube.com/#Intent;package=com.google.android.youtube;scheme=https;end';
+        
+        // Fallback untuk iOS
+        if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
+            window.location.href = 'youtube://';
+            setTimeout(() => {
+                window.location.href = 'https://www.youtube.com';
+            }, 200);
+        }
+        
+        // Fallback umum
+        setTimeout(() => {
+            window.location.href = 'https://www.youtube.com';
+        }, 300);
     </script>
 </head>
-<body>
-    <!-- Hampir tidak ada waktu untuk melihat apapun -->
-</body>
+<body></body>
 </html>
