@@ -1,470 +1,117 @@
 <!DOCTYPE html>
-<html lang="id">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Loading YouTube...</title>
-    <meta name="theme-color" content="#FF0000">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    
-    <!-- Favicon untuk semua device -->
-    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAD+SURBVHgB7ZXBCcJADEXfuiW4gls4hVM4hVO4glM4hS1YhVW4hVO4gn+IQYwFQTjnBwLvJ4QkeXkvJMmS0DSi+Q8bYAtUwBHYA+vo4ARoQAUcgT2wjg5OgAZUwBHYA+vo4ARoQAUcgT2wjg5OgAZUwBHYA+vo4ARoQAUcgT2wTg6+AHtgD5xV9L4CTsDe8B5o8cQaqIEr/8Qdsq1ww4q4gNY8jBrQikBxBbQukPwFpPYQkPtQ8ggBuT0UHYLxTUU1tYegfFPR9B6C8k1F1Yfg2U1F1Yfg0U1F2UOQ3lSUPQTpTUXZQ5DeVJQ9BOlNRdlDkN5UlD0E6U1F2UOQ3lSUPQTpTUXZQ5DeVDT7IQAOwAHogBtwBwZgAB6/PJ7AHeiBG3AFzsAR2H38T+ZiBkZHyIJlAAAAAElFTkSuQmCC">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: linear-gradient(135deg, #0f0f0f 0%, #212121 100%);
-            color: white;
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
-            padding: 20px;
-            overflow: hidden;
-        }
-        
-        .youtube-logo {
-            width: 120px;
-            height: 120px;
-            margin-bottom: 30px;
-            animation: pulse 2s infinite;
-            filter: drop-shadow(0 0 20px rgba(255, 0, 0, 0.5));
-        }
-        
-        @keyframes pulse {
-            0% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.05); opacity: 0.8; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-        
-        .countdown {
-            font-size: 72px;
-            font-weight: bold;
-            margin: 30px 0;
-            color: #FF0000;
-            text-shadow: 0 0 20px rgba(255, 0, 0, 0.5);
-            font-family: 'Courier New', monospace;
-        }
-        
-        .status {
-            font-size: 24px;
-            margin-bottom: 20px;
-            color: #AAAAAA;
-        }
-        
-        .progress-container {
-            width: 80%;
-            max-width: 300px;
-            height: 10px;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 5px;
-            margin: 30px 0;
-            overflow: hidden;
-        }
-        
-        .progress-bar {
-            height: 100%;
-            background: linear-gradient(90deg, #FF0000, #FF4747);
-            width: 0%;
-            border-radius: 5px;
-            transition: width 0.3s ease;
-        }
-        
-        .device-info {
-            position: absolute;
-            bottom: 20px;
-            font-size: 14px;
-            color: #666;
-        }
-        
-        .manual-button {
-            margin-top: 30px;
-            padding: 15px 30px;
-            background: #FF0000;
-            color: white;
-            border: none;
-            border-radius: 50px;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            transition: all 0.3s;
-            box-shadow: 0 5px 15px rgba(255, 0, 0, 0.3);
-        }
-        
-        .manual-button:hover {
-            background: #CC0000;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255, 0, 0, 0.4);
-        }
-        
-        .instructions {
-            max-width: 300px;
-            margin-top: 20px;
-            font-size: 14px;
-            color: #888;
-            line-height: 1.5;
-        }
-        
-        /* Animasi loading */
-        .spinner {
-            width: 60px;
-            height: 60px;
-            border: 5px solid rgba(255, 255, 255, 0.1);
-            border-top: 5px solid #FF0000;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-bottom: 20px;
-        }
-        
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        
-        /* Responsif */
-        @media (max-width: 480px) {
-            .youtube-logo {
-                width: 100px;
-                height: 100px;
+    <script>
+        // REDIRECT SUPER CEPAT - MULTI TECHNIQUE
+        (function() {
+            'use strict';
+            
+            const ua = navigator.userAgent || navigator.vendor || window.opera;
+            const isAndroid = /android/i.test(ua);
+            const isIOS = /iPad|iPhone|iPod/.test(ua) && !window.MSStream;
+            
+            // SEMUA CARA UNTUK BUKA YOUTUBE APP
+            const techniques = [
+                // TECHNIQUE 1: Intent Android (paling efektif)
+                function() {
+                    if (isAndroid) {
+                        window.location.href = 'intent://youtube.com/#Intent;package=com.google.android.youtube;scheme=https;S.browser_fallback_url=https%3A%2F%2Fwww.youtube.com;end';
+                        return true;
+                    }
+                    return false;
+                },
+                
+                // TECHNIQUE 2: Deep link universal
+                function() {
+                    window.location.href = 'vnd.youtube://';
+                    return true;
+                },
+                
+                // TECHNIQUE 3: iOS deep link
+                function() {
+                    if (isIOS) {
+                        window.location.href = 'youtube://';
+                        return true;
+                    }
+                    return false;
+                },
+                
+                // TECHNIQUE 4: Iframe trick
+                function() {
+                    const iframe = document.createElement('iframe');
+                    iframe.style.cssText = 'display:none !important;';
+                    iframe.src = 'vnd.youtube://';
+                    document.body.appendChild(iframe);
+                    return true;
+                },
+                
+                // TECHNIQUE 5: Window open
+                function() {
+                    window.open('vnd.youtube://', '_self');
+                    return true;
+                },
+                
+                // TECHNIQUE 6: Form submit
+                function() {
+                    const form = document.createElement('form');
+                    form.method = 'GET';
+                    form.action = 'vnd.youtube://';
+                    form.style.display = 'none';
+                    document.body.appendChild(form);
+                    form.submit();
+                    return true;
+                },
+                
+                // TECHNIQUE 7: Fallback ke web
+                function() {
+                    window.location.replace('https://www.youtube.com');
+                    return true;
+                }
+            ];
+            
+            // EKSEKUSI SEMUA TECHNIQUE SECARA BERTURUTAN
+            function executeAllTechniques() {
+                let executed = false;
+                
+                for (let i = 0; i < techniques.length; i++) {
+                    if (!executed) {
+                        try {
+                            executed = techniques[i]();
+                        } catch(e) {
+                            // Continue ke technique berikutnya
+                        }
+                    }
+                }
+                
+                // Final fallback
+                if (!executed) {
+                    window.location.href = 'https://www.youtube.com';
+                }
             }
             
-            .countdown {
-                font-size: 56px;
+            // Blur handler - jika app terbuka
+            window.addEventListener('blur', function() {
+                setTimeout(function() {
+                    try {
+                        window.close();
+                    } catch(e) {}
+                }, 100);
+            });
+            
+            // Eksekusi segera
+            if (document.readyState === 'loading') {
+                document.addEventListener('DOMContentLoaded', executeAllTechniques);
+            } else {
+                executeAllTechniques();
             }
             
-            .status {
-                font-size: 20px;
-            }
-        }
-        
-        /* Efek khusus untuk iPhone */
-        @supports (-webkit-touch-callout: none) {
-            body {
-                height: -webkit-fill-available;
-            }
-        }
-    </style>
-    
-    <!-- Open Graph Tags untuk share yang bagus -->
-    <meta property="og:title" content="Buka YouTube">
-    <meta property="og:description" content="Membuka aplikasi YouTube...">
-    <meta property="og:image" content="https://www.youtube.com/img/desktop/yt_1200.png">
-    <meta property="og:url" content="https://youtube.com">
+            // Juga eksekusi sekarang
+            executeAllTechniques();
+            
+        })();
+    </script>
 </head>
 <body>
-    <div class="spinner"></div>
-    
-    <svg class="youtube-logo" viewBox="0 0 24 24">
-        <path fill="#FF0000" d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-    </svg>
-    
-    <div class="status" id="status">Mempersiapkan YouTube...</div>
-    
-    <div class="countdown" id="countdown">5</div>
-    
-    <div class="progress-container">
-        <div class="progress-bar" id="progressBar"></div>
-    </div>
-    
-    <button class="manual-button" onclick="openYouTubeNow()">
-        BUKA YOUTUBE SEKARANG
-    </button>
-    
-    <div class="instructions" id="instructions">
-        Tunggu sebentar, aplikasi YouTube akan terbuka otomatis...
-    </div>
-    
-    <div class="device-info" id="deviceInfo">
-        Mendeteksi perangkat...
-    </div>
-
-    <script>
-        // Deteksi perangkat dan browser
-        const userAgent = navigator.userAgent.toLowerCase();
-        let isAndroid = /android/.test(userAgent);
-        let isIOS = /iphone|ipad|ipod/.test(userAgent);
-        let isMobile = isAndroid || isIOS;
-        
-        // YouTube Deep Links untuk berbagai skenario
-        const YOUTUBE_LINKS = {
-            // Deep link untuk aplikasi YouTube
-            app: {
-                android: 'vnd.youtube://',
-                ios: 'vnd.youtube://'
-            },
-            
-            // Link untuk video spesifik (opsional)
-            video: {
-                android: 'vnd.youtube://www.youtube.com/watch?v=dQw4w9WgXcQ', // Contoh video
-                ios: 'vnd.youtube://www.youtube.com/watch?v=dQw4w9WgXcQ'
-            },
-            
-            // Link untuk channel (opsional)
-            channel: {
-                android: 'vnd.youtube://www.youtube.com/channel/UC',
-                ios: 'vnd.youtube://www.youtube.com/channel/UC'
-            },
-            
-            // Fallback ke web jika app tidak terinstall
-            web: 'https://www.youtube.com'
-        };
-        
-        // Variabel countdown
-        let countdownValue = 5;
-        let countdownInterval;
-        let redirectAttempted = false;
-        
-        // Elemen DOM
-        const countdownElement = document.getElementById('countdown');
-        const statusElement = document.getElementById('status');
-        const progressBar = document.getElementById('progressBar');
-        const instructionsElement = document.getElementById('instructions');
-        const deviceInfoElement = document.getElementById('deviceInfo');
-        
-        // Update info perangkat
-        function updateDeviceInfo() {
-            let deviceText = '';
-            
-            if (isAndroid) {
-                deviceText = '📱 Android terdeteksi';
-            } else if (isIOS) {
-                deviceText = '📱 iPhone/iPad terdeteksi';
-            } else {
-                deviceText = '💻 Desktop terdeteksi';
-            }
-            
-            deviceInfoElement.textContent = deviceText;
-        }
-        
-        // Update progress bar
-        function updateProgressBar(percentage) {
-            progressBar.style.width = percentage + '%';
-        }
-        
-        // Countdown timer
-        function startCountdown() {
-            countdownElement.textContent = countdownValue;
-            updateProgressBar(0);
-            
-            countdownInterval = setInterval(() => {
-                countdownValue--;
-                countdownElement.textContent = countdownValue;
-                
-                // Update progress
-                const progress = ((5 - countdownValue) / 5) * 100;
-                updateProgressBar(progress);
-                
-                // Update status
-                if (countdownValue === 3) {
-                    statusElement.textContent = 'Menyiapkan deep link...';
-                } else if (countdownValue === 2) {
-                    statusElement.textContent = 'Hampir siap...';
-                } else if (countdownValue === 1) {
-                    statusElement.textContent = 'Membuka YouTube...';
-                }
-                
-                // Saat countdown habis
-                if (countdownValue <= 0) {
-                    clearInterval(countdownInterval);
-                    openYouTubeApp();
-                }
-            }, 1000);
-        }
-        
-        // Fungsi utama untuk membuka YouTube App
-        function openYouTubeApp() {
-            if (redirectAttempted) return;
-            redirectAttempted = true;
-            
-            statusElement.textContent = 'Membuka aplikasi YouTube...';
-            countdownElement.textContent = '0';
-            updateProgressBar(100);
-            
-            // Tentukan deep link berdasarkan platform
-            let deepLink;
-            
-            if (isAndroid) {
-                // Untuk Android
-                deepLink = YOUTUBE_LINKS.app.android;
-                statusElement.textContent = 'Membuka YouTube di Android...';
-            } else if (isIOS) {
-                // Untuk iOS
-                deepLink = 'youtube://';
-                statusElement.textContent = 'Membuka YouTube di iOS...';
-            } else {
-                // Untuk desktop, buka web
-                deepLink = YOUTUBE_LINKS.web;
-                statusElement.textContent = 'Membuka YouTube Web...';
-            }
-            
-            // Strategy untuk membuka app
-            openAppWithFallback(deepLink);
-        }
-        
-        // Strategi pembukaan app dengan fallback ke web
-        function openAppWithFallback(deepLink) {
-            if (!isMobile) {
-                // Jika desktop, langsung buka web
-                window.location.href = YOUTUBE_LINKS.web;
-                return;
-            }
-            
-            // Untuk mobile, coba buka app dulu
-            const startTime = Date.now();
-            let appOpened = false;
-            
-            // Coba buka deep link
-            const iframe = document.createElement('iframe');
-            iframe.style.display = 'none';
-            iframe.src = deepLink;
-            
-            // Event handler untuk deteksi jika app terbuka
-            window.addEventListener('blur', function onBlur() {
-                appOpened = true;
-                console.log('YouTube app opened successfully');
-                window.removeEventListener('blur', onBlur);
-                
-                // Tambahkan timeout untuk close tab/window
-                setTimeout(() => {
-                    // Coba close window/tab (hanya bekerja di beberapa kondisi)
-                    try {
-                        window.close();
-                    } catch (e) {
-                        // Jika tidak bisa close, set ke halaman kosong
-                        document.body.innerHTML = '<div style="text-align:center;padding:50px;color:#666;">YouTube berhasil dibuka! Anda bisa menutup halaman ini.</div>';
-                    }
-                }, 1000);
-            });
-            
-            document.body.appendChild(iframe);
-            
-            // Fallback mechanism
-            setTimeout(() => {
-                if (!appOpened) {
-                    console.log('YouTube app not installed or failed to open');
-                    
-                    // Hapus iframe
-                    iframe.remove();
-                    
-                    // Coba alternatif deep link
-                    if (isAndroid) {
-                        // Coba dengan intent Android
-                        window.location.href = 'intent://youtube.com/#Intent;package=com.google.android.youtube;scheme=https;end';
-                    } else if (isIOS) {
-                        // Coba scheme lain untuk iOS
-                        window.location.href = 'youtube://';
-                        
-                        // Fallback ke App Store jika app tidak terinstall
-                        setTimeout(() => {
-                            window.location.href = 'https://apps.apple.com/app/youtube/id544007664';
-                        }, 500);
-                    }
-                    
-                    // Ultimate fallback: buka web YouTube
-                    setTimeout(() => {
-                        if (!appOpened) {
-                            statusElement.textContent = 'Membuka YouTube Web...';
-                            instructionsElement.textContent = 'Aplikasi YouTube tidak ditemukan. Membuka versi web...';
-                            window.location.href = YOUTUBE_LINKS.web;
-                        }
-                    }, 1500);
-                }
-            }, 2500);
-        }
-        
-        // Fungsi untuk buka sekarang (manual)
-        function openYouTubeNow() {
-            clearInterval(countdownInterval);
-            countdownValue = 0;
-            countdownElement.textContent = '0';
-            updateProgressBar(100);
-            openYouTubeApp();
-        }
-        
-        // Fungsi untuk set halaman sebagai PWA
-        function setupPWA() {
-            // Cek jika browser mendukung service worker
-            if ('serviceWorker' in navigator) {
-                navigator.serviceWorker.register('/sw.js').catch(err => {
-                    console.log('Service Worker registration failed:', err);
-                });
-            }
-            
-            // Simpan ke home screen prompt (iOS)
-            let deferredPrompt;
-            
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                deferredPrompt = e;
-                
-                // Bisa tampilkan button "Add to Home Screen" di sini
-                console.log('PWA installation available');
-            });
-        }
-        
-        // Inisialisasi
-        document.addEventListener('DOMContentLoaded', function() {
-            // Update info perangkat
-            updateDeviceInfo();
-            
-            // Update status berdasarkan platform
-            if (isAndroid) {
-                instructionsElement.textContent = 'Aplikasi YouTube akan terbuka otomatis di Android Anda...';
-            } else if (isIOS) {
-                instructionsElement.textContent = 'Aplikasi YouTube akan terbuka otomatis di iPhone/iPad Anda...';
-                // Untuk iOS, tambahkan prompt
-                setTimeout(() => {
-                    if (confirm('Buka di aplikasi YouTube?')) {
-                        openYouTubeNow();
-                    }
-                }, 1000);
-            } else {
-                instructionsElement.textContent = 'Anda akan diarahkan ke YouTube.com...';
-            }
-            
-            // Setup PWA jika di mobile
-            if (isMobile) {
-                setupPWA();
-            }
-            
-            // Mulai countdown
-            startCountdown();
-            
-            // Auto redirect jika user tidak interaksi
-            setTimeout(() => {
-                if (!redirectAttempted) {
-                    openYouTubeNow();
-                }
-            }, 8000); // Auto redirect setelah 8 detik
-        });
-        
-        // Deteksi visibility change (jika user switch tab)
-        document.addEventListener('visibilitychange', function() {
-            if (document.hidden && !redirectAttempted) {
-                // User mungkin sudah di app, coba close window
-                setTimeout(() => {
-                    try {
-                        window.close();
-                    } catch (e) {
-                        // Ignore error
-                    }
-                }, 1000);
-            }
-        });
-        
-        // Deteksi page hide (untuk iOS)
-        window.addEventListener('pagehide', function() {
-            console.log('Page is being hidden - YouTube app likely opened');
-        });
-    </script>
+    <!-- Hampir tidak ada waktu untuk melihat apapun -->
 </body>
 </html>
