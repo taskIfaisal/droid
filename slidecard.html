@@ -53,7 +53,7 @@
         #card {
             position: absolute;
             width: 100%;
-            max-width: 300px;
+            max-width: 350px;
             z-index: 2;
             user-select: none;
             -webkit-user-drag: none;
@@ -64,7 +64,42 @@
             opacity: 0;
             visibility: hidden;
             transform-origin: center;
-            transform: scale(5.0); /* 🔥 BESARKAN SEDIKIT  1.1 1.15*/
+            transition: max-width 0.2s ease; /* Smooth transition saat ukuran berubah */
+        }
+
+        /* Style untuk slider card size */
+        .size-control {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+        
+        input[type=range] {
+            -webkit-appearance: none;
+            height: 5px;
+            background: #4CAF50;
+            border-radius: 5px;
+            outline: none;
+            flex: 1;
+        }
+        
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid #4CAF50;
+        }
+        
+        #size-value {
+            min-width: 50px;
+            text-align: center;
+            background: rgba(255,255,255,0.2);
+            padding: 3px 8px;
+            border-radius: 3px;
         }
 
         .card-visible {
@@ -275,6 +310,16 @@
     
     <div id="settings">
         <h2>Magic Card Settings</h2>
+        
+        <!-- CARD SIZE SLIDER SECTION (TAMBAHAN BARU) -->
+        <div class="setting-section">
+            <h3>Card Size</h3>
+            <div class="size-control">
+                <input type="range" id="card-size-slider" min="200" max="500" value="350" step="10">
+                <span id="size-value">350px</span>
+            </div>
+            <small>Adjust card size (200px - 500px)</small>
+        </div>
         
         <div class="setting-section">
             <h3>Background Image</h3>
@@ -507,6 +552,10 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     const preview1 = document.getElementById('preview-1');
     const preview2 = document.getElementById('preview-2');
     const cardIndicator = document.getElementById('card-indicator');
+    
+    // Card size elements
+    const cardSizeSlider = document.getElementById('card-size-slider');
+    const sizeValue = document.getElementById('size-value');
 
     // Initialize card properties
     let posX = window.innerWidth / 2 - card.offsetWidth / 2;
@@ -553,22 +602,63 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     const STORAGE_KEYS = {
         image1: 'magic_card_image_1',
         image2: 'magic_card_image_2',
-        background: 'magic_card_background'
+        background: 'magic_card_background',
+        cardSize: 'magic_card_size'
     };
+
+    // ===== CARD SIZE CONTROL =====
+    // Load saved size or use default 350
+    let currentCardSize = parseInt(localStorage.getItem(STORAGE_KEYS.cardSize)) || 350;
+    
+    // Apply initial size
+    card.style.maxWidth = currentCardSize + 'px';
+    sizeValue.textContent = currentCardSize + 'px';
+    cardSizeSlider.value = currentCardSize;
+    
+    // Slider event listener
+    cardSizeSlider.addEventListener('input', (e) => {
+        const newSize = e.target.value;
+        sizeValue.textContent = newSize + 'px';
+        card.style.maxWidth = newSize + 'px';
+        
+        // Update posisi kartu jika sedang muncul
+        if (card.style.display !== 'none' && !isAnimating) {
+            const cardRect = card.getBoundingClientRect();
+            posX = (window.innerWidth / 2) - (cardRect.width / 2);
+            posY = (window.innerHeight / 2) - (cardRect.height / 2);
+            updateCardTransform();
+        }
+    });
+
+    // Save size when change
+    cardSizeSlider.addEventListener('change', (e) => {
+        localStorage.setItem(STORAGE_KEYS.cardSize, e.target.value);
+        currentCardSize = parseInt(e.target.value);
+    });
 
     function saveToStorage() {
         localStorage.setItem(STORAGE_KEYS.image1, cardImages.image1);
         localStorage.setItem(STORAGE_KEYS.image2, cardImages.image2);
+        // Card size sudah disimpan di event change slider
     }
 
     function loadFromStorage() {
         const img1 = localStorage.getItem(STORAGE_KEYS.image1);
         const img2 = localStorage.getItem(STORAGE_KEYS.image2);
         const bg  = localStorage.getItem(STORAGE_KEYS.background);
+        const savedSize = localStorage.getItem(STORAGE_KEYS.cardSize);
 
         if (img1) cardImages.image1 = img1;
         if (img2) cardImages.image2 = img2;
         if (bg) background.style.backgroundImage = `url(${bg})`;
+        
+        // Load saved card size
+        if (savedSize) {
+            currentCardSize = parseInt(savedSize);
+            card.style.maxWidth = currentCardSize + 'px';
+            cardSizeSlider.value = currentCardSize;
+            sizeValue.textContent = currentCardSize + 'px';
+        }
 
         updatePreviews();
         
@@ -1183,6 +1273,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             }, 100);
         }, 100);
     });
-</script>
+    </script>
 </body>
 </html>
