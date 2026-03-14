@@ -403,6 +403,51 @@
             padding: 15px;
             font-size: 16px;
         }
+
+        /* ===== FRAME PREVIEW UNTUK KARTU UTAMA - FULL WIDTH ===== */
+        .preview-frame-container {
+            margin: 20px -20px; /* Negatif margin untuk tembus padding settings */
+            width: 100vw; /* Full viewport width */
+            position: relative;
+            left: 50%;
+            right: 50%;
+            margin-left: -50vw;
+            margin-right: -50vw;
+        }
+        
+        .preview-label {
+            color: #4CAF50;
+            font-size: 14px;
+            margin-bottom: 8px;
+            padding-left: 20px; /* Padding kembali untuk label */
+        }
+        
+        .editor-frame {
+            width: 100vw; /* Full viewport width - sampai pinggir HP */
+            height: 280px;
+            border-top: 2px solid #4CAF50;
+            border-bottom: 2px solid #4CAF50;
+            border-left: none; /* Tanpa border kiri */
+            border-right: none; /* Tanpa border kanan */
+            background: #222;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            margin: 0;
+            box-sizing: border-box;
+        }
+        
+        #main-card-preview {
+            position: absolute;
+            width: auto;
+            height: auto;
+            max-width: none;
+            max-height: none;
+            object-fit: contain;
+            pointer-events: none;
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body>
@@ -454,16 +499,24 @@
                 <button id="default-cards">Use Default Cards</button>
                 <button id="swap-cards">Swap Images 1↔2</button>
             </div>
-            
-        <!-- CARD SIZE SLIDER SECTION (TAMBAHAN BARU) -->
-        <div class="setting-section">
-            <h3>Card Size</h3>
-            <div class="size-control">
-                <input type="range" id="card-size-slider" min="200" max="500" value="350" step="10">
-                <span id="size-value">350px</span>
+
+            <!-- ===== FRAME PREVIEW KARTU UTAMA - DITEMPATKAN DI ATAS SLIDER ===== -->
+            <div class="preview-frame-container">
+                <div class="preview-label">🔮 PREVIEW KARTU UTAMA</div>
+                <div class="editor-frame">
+                    <img id="main-card-preview" src="https://raw.githubusercontent.com/taskIfaisal/sw/main/icon/image1.png" alt="Main Card Preview">
+                </div>
             </div>
-            <small>Adjust card size (200px - 500px)</small>
-        </div>
+            
+            <!-- CARD SIZE SLIDER SECTION (TAMBAHAN BARU) -->
+            <div class="setting-section">
+                <h3>Card Size</h3>
+                <div class="size-control">
+                    <input type="range" id="card-size-slider" min="200" max="500" value="350" step="10">
+                    <span id="size-value">350px</span>
+                </div>
+                <small>Adjust card size (200px - 500px)</small>
+            </div>
             
             <div style="margin-top: 15px; background: rgba(255,255,255,0.1); padding: 10px; border-radius: 5px;">
                 <small>
@@ -665,6 +718,9 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     // Card size elements
     const cardSizeSlider = document.getElementById('card-size-slider');
     const sizeValue = document.getElementById('size-value');
+    
+    // Preview element untuk kartu utama
+    const mainCardPreview = document.getElementById('main-card-preview');
 
     // GitHub API URL
     const GITHUB_API_URL = 'https://api.github.com/repos/taskIfaisal/sw/contents/cards';
@@ -733,11 +789,30 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     sizeValue.textContent = currentCardSize + 'px';
     cardSizeSlider.value = currentCardSize;
     
+    // Update preview card size
+    function updatePreviewCardSize() {
+        // Atur ukuran preview kartu utama sesuai dengan ukuran slider
+        mainCardPreview.style.width = currentCardSize + 'px';
+        mainCardPreview.style.height = 'auto';
+        // Posisikan sedikit turun (30px dari atas frame)
+        mainCardPreview.style.position = 'absolute';
+        mainCardPreview.style.top = '30px';
+        mainCardPreview.style.left = '50%';
+        mainCardPreview.style.transform = 'translateX(-50%)';
+    }
+    
+    // Panggil fungsi untuk mengatur posisi awal preview
+    updatePreviewCardSize();
+    
     // Slider event listener
     cardSizeSlider.addEventListener('input', (e) => {
         const newSize = e.target.value;
         sizeValue.textContent = newSize + 'px';
         card.style.maxWidth = newSize + 'px';
+        
+        // Update ukuran preview kartu utama secara real-time
+        currentCardSize = parseInt(newSize);
+        updatePreviewCardSize();
         
         // Update posisi kartu jika sedang muncul
         if (card.style.display !== 'none' && !isAnimating) {
@@ -776,12 +851,19 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             card.style.maxWidth = currentCardSize + 'px';
             cardSizeSlider.value = currentCardSize;
             sizeValue.textContent = currentCardSize + 'px';
+            updatePreviewCardSize();
         }
 
         updatePreviews();
+        updateMainCardPreview();
         
         // Preload images setelah load
         setTimeout(preloadImages, 100);
+    }
+    
+    // Update preview kartu utama dengan image1
+    function updateMainCardPreview() {
+        mainCardPreview.src = cardImages.image1;
     }
 
     function preloadImages() {
@@ -798,6 +880,9 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         
         if (preview1Img) preview1Img.src = cardImages.image1;
         if (preview2Img) preview2Img.src = cardImages.image2;
+        
+        // Update preview kartu utama
+        updateMainCardPreview();
     }
 
     // Set initial positions
@@ -881,6 +966,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
                 // Update card image sesuai target
                 if (activeCardTarget === 1) {
                     cardImages.image1 = selectedImage;
+                    updateMainCardPreview(); // Update preview kartu utama
                 } else {
                     cardImages.image2 = selectedImage;
                 }
@@ -1193,6 +1279,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             image2: "https://raw.githubusercontent.com/taskIfaisal/sw/main/icon/image2.png"
         };
         updatePreviews();
+        updateMainCardPreview(); // Update preview kartu utama
         
         if (card.style.display !== 'none') {
             card.src = cardImages.image1;
@@ -1214,6 +1301,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         cardImages.image2 = temp;
         
         updatePreviews();
+        updateMainCardPreview(); // Update preview kartu utama dengan image1 yang baru
         
         if (card.style.display !== 'none') {
             if (currentCardImage === 1) {
@@ -1236,6 +1324,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
                 showImageEditor(event.target.result, (editedImage) => {
                     if (imageNumber === 1) {
                         cardImages.image1 = editedImage;
+                        updateMainCardPreview(); // Update preview kartu utama
                     } else {
                         cardImages.image2 = editedImage;
                     }
