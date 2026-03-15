@@ -3,23 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Magic Card Trick</title>
+    <title>Card2Magic</title>
     
     <!-- ========== PWA META TAGS UNTUK INSTALL KE LAYAR UTAMA ========== -->
     <meta name="theme-color" content="#000000">
-    <meta name="description" content="Magic Card Trick - A magical card transformation app">
+    <meta name="description" content="Card2Magic - A magical card trick app with 3 favorites">
     <link rel="manifest" href="./manifest-card2magic.json">
     <!-- =============================================================== -->
     
-    <link rel="apple-touch-icon" href="./icon/card2phone-512x512.png">
-    <link rel="apple-touch-startup-image" href="./icon/card2phone-512x512.png">
+    <link rel="apple-touch-icon" href="./icon/card2magic-512.png">
+    <link rel="apple-touch-startup-image" href="./icon/card2magic-512.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Card2Phone">
+    <meta name="apple-mobile-web-app-title" content="Card2Magic">
     <link href="https://cdn.jsdelivr.net/npm/cropperjs@1.5.13/dist/cropper.min.css" rel="stylesheet">
-    <link rel="icon" type="image/png" sizes="192x192" href="./icon/card2phone-512x512.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="./icon/card2magic-512.png">
     
     <style>
+        /* [CSS ANDA TETAP SAMA] */
         html, body {
             margin: 0;
             padding: 0;
@@ -641,11 +642,11 @@
         
         function showInstallToast() {
             // Cek apakah sudah pernah dismiss hari ini
-            const lastDismiss = localStorage.getItem('installToastDismissed');
+            const lastDismiss = localStorage.getItem('installToastDismissed_card2magic');
             const oneDay = 24 * 60 * 60 * 1000;
             
             if (lastDismiss && (Date.now() - parseInt(lastDismiss)) < oneDay) {
-                return; // Jangan tampilkan jika sudah dismiss hari ini
+                return;
             }
             
             const toast = document.createElement('div');
@@ -654,8 +655,8 @@
                 <div style="background: rgba(0,0,0,0.9); color: white; padding: 15px 20px; border-radius: 12px; 
                      text-align: center; max-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); 
                      border: 1px solid #4CAF50; backdrop-filter: blur(10px);">
-                    <div style="margin-bottom: 10px; font-weight: bold; font-size: 18px;">✨ Install Magic Card Trick</div>
-                    <div style="font-size: 14px; margin-bottom: 15px; color: #ddd;">Install ke layar utama untuk akses lebih cepat dan pengalaman terbaik!</div>
+                    <div style="margin-bottom: 10px; font-weight: bold; font-size: 18px;">✨ Install Card2Magic</div>
+                    <div style="font-size: 14px; margin-bottom: 15px; color: #ddd;">Install untuk akses cepat ke aplikasi magic card dengan 3 favorites!</div>
                     <div style="display: flex; gap: 12px; justify-content: center;">
                         <button id="install-now" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; flex: 1;">
                             Install
@@ -688,7 +689,7 @@
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
                 }
-                localStorage.setItem('installToastDismissed', Date.now());
+                localStorage.setItem('installToastDismissed_card2magic', Date.now());
             });
             
             setTimeout(() => {
@@ -699,7 +700,7 @@
         }
         
         window.addEventListener('appinstalled', () => {
-            console.log('Magic Card Trick berhasil diinstall ke layar utama!');
+            console.log('Card2Magic berhasil diinstall ke layar utama!');
             const toast = document.getElementById('install-toast');
             if (toast && toast.parentNode) {
                 toast.parentNode.removeChild(toast);
@@ -707,25 +708,70 @@
         });
     }
     
-    // Register Service Worker untuk offline support
+    // Register Service Worker untuk offline support - dengan nama berbeda
     if ('serviceWorker' in navigator && !isStandalone) {
         window.addEventListener('load', () => {
+            // Buat service worker spesifik untuk card2magic
+            const swCode = `
+                const CACHE_NAME = 'card2magic-v1';
+                
+                self.addEventListener('install', (event) => {
+                    self.skipWaiting();
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(cache => {
+                                return cache.addAll([
+                                    './card2magic.html',
+                                    './manifest-card2magic.json',
+                                    './icon/card2magic-512.png'
+                                ]);
+                            })
+                    );
+                });
+                
+                self.addEventListener('activate', (event) => {
+                    event.waitUntil(
+                        caches.keys().then(cacheNames => {
+                            return Promise.all(
+                                cacheNames.map(cacheName => {
+                                    if (cacheName !== CACHE_NAME) {
+                                        return caches.delete(cacheName);
+                                    }
+                                })
+                            );
+                        })
+                    );
+                });
+                
+                self.addEventListener('fetch', (event) => {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(response => {
+                                return response || fetch(event.request);
+                            })
+                    );
+                });
+            `;
+            
             try {
-                navigator.serviceWorker.register('./sw.js', { scope: './' })
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl, { scope: './' })
                     .then(registration => {
-                        console.log('Service Worker registered untuk offline support');
+                        console.log('Card2Magic Service Worker registered');
                     })
                     .catch(error => {
-                        console.log('Service Worker registration failed:', error);
+                        console.log('Card2Magic Service Worker registration failed:', error);
                     });
             } catch (error) {
-                console.log('Error registering Service Worker:', error);
+                console.log('Error creating Card2Magic Service Worker:', error);
             }
         });
     }
     // ================================================================
     
-    // Elements
+    // [SISA JAVASCRIPT ANDA TETAP SAMA]
     const background = document.getElementById('background');
     const card = document.getElementById('card');
     const settings = document.getElementById('settings');
@@ -734,30 +780,24 @@
     const closeSettingsBtn = document.getElementById('close-settings');
     const sensorPermissionBtn = document.getElementById('sensor-permission');
     
-    // Card size elements
     const cardSizeSlider = document.getElementById('card-size-slider');
     const sizeValue = document.getElementById('size-value');
     
-    // Preview elements
     const mainCardPreview = document.getElementById('main-card-preview');
     const preview1 = document.getElementById('preview-1');
     const preview2 = document.getElementById('preview-2');
     const preview3 = document.getElementById('preview-3');
     
-    // Effect toggles
     const effectStandarCheckbox = document.getElementById('effect-standar');
     const shadowEffectCheckbox = document.getElementById('shadow-effect');
 
-    // GitHub API URL
     const GITHUB_API_URL = 'https://api.github.com/repos/taskIfaisal/sw/contents/images';
     
-    // State untuk album
     let currentFolder = null;
     let selectedImage = null;
     let modalElement = null;
     let activePreview = 1;
 
-    // Initialize card properties
     let posX = window.innerWidth / 2 - card.offsetWidth / 2;
     let posY = window.innerHeight + card.offsetHeight + 100;
     let scale = 1;
@@ -769,28 +809,21 @@
     let lastPosY = 0;
     let lastTime = 0;
     
-    // SENSOR VARIABLES
     let smoothBeta = 0;
     let smoothGamma = 0;
     const sensitivity = 0.5;
     const smoothing = 0.2;
     let isSensorEnabled = false;
     
-    // ===== VARIABEL UNTUK SEQUENCE CARD =====
     let sequenceTimer = null;
     let sequenceStage = 0;
     let isSequenceActive = false;
-    
-    // ===== VARIABEL UNTUK SENTUHAN KARTU =====
     let touchToChangeTimeout = null;
     
-    // ===== LOCAL STORAGE SETUP =====
     const STORAGE_KEY = 'magic_card_data';
     
-    // Load saved data on startup
     loadFromStorage();
     
-    // ===== CARD SIZE CONTROL =====
     let currentCardSize = parseInt(localStorage.getItem('card_size')) || 200;
     
     card.style.maxWidth = currentCardSize + 'px';
@@ -808,13 +841,11 @@
     
     function updateMainCardPreview() {
         mainCardPreview.src = card.src;
-        console.log('Main preview updated to:', card.src.substring(0, 50) + '...');
     }
     
     updatePreviewCardSize();
     updateMainCardPreview();
     
-    // Slider event listener
     cardSizeSlider.addEventListener('input', (e) => {
         const newSize = e.target.value;
         sizeValue.textContent = newSize + 'px';
@@ -842,17 +873,14 @@
     
     updateCardTransform();
     
-    // ===== CEGAH DOUBLE TAP ZOOM =====
     document.addEventListener('touchstart', (e) => {
         if (e.touches.length > 1) {
             e.preventDefault();
         }
     }, { passive: false });
     
-    // ===== INIT SENSOR =====
     initSensor();
     
-    // ===== FUNGSI GITHUB ALBUM =====
     async function loadRootFolders() {
         try {
             const response = await fetch(GITHUB_API_URL);
@@ -995,7 +1023,6 @@
         html += '</div>';
         contentElement.innerHTML = html;
         
-        // Event listener untuk single click langsung apply
         document.querySelectorAll('.grid-item').forEach(item => {
             item.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -1003,24 +1030,19 @@
                 
                 const imageUrl = this.dataset.url;
                 
-                // Update preview box
                 const previewBox = document.getElementById(`preview-${activePreview}`);
                 const previewImg = previewBox.querySelector('img');
                 previewImg.src = imageUrl;
                 
-                // Jika yang dipilih Favorite 1, update kartu utama dan preview besar
                 if (activePreview === 1) {
                     updateCardImage(imageUrl);
                 }
                 
-                // Highlight preview yang dipilih
                 document.querySelectorAll('.preview-box').forEach(p => p.classList.remove('selected'));
                 previewBox.classList.add('selected');
                 
-                // SIMPAN SEMUA PREVIEW KE STORAGE
                 autoSave();
                 
-                // Tutup modal
                 document.body.removeChild(modalElement);
                 modalElement = null;
             });
@@ -1034,7 +1056,6 @@
         renderFolders();
     };
     
-    // ===== EVENT LISTENER UNTUK PREVIEW =====
     preview1.addEventListener('click', () => {
         showGithubModal(1);
     });
@@ -1047,34 +1068,25 @@
         showGithubModal(3);
     });
     
-    // ===== FUNGSI UNTUK UPDATE CARD IMAGE =====
     function updateCardImage(imageSrc) {
         console.log('Updating card image to:', imageSrc.substring(0, 50) + '...');
         
-        // Update Favorite 1
         const preview1Img = preview1.querySelector('img');
         if (preview1Img) {
             preview1Img.src = imageSrc;
         }
         
-        // Update kartu utama
         card.src = imageSrc;
-        
-        // Update preview besar
         mainCardPreview.src = imageSrc;
         updateMainCardPreview();
         
-        // Reset scale
         scale = 1;
         updateCardTransform();
         
-        // Simpan ke localStorage
         autoSave();
     }
     
-    // ===== FUNGSI UNTUK EFFECT STANDAR (MUNCUL CEPAT) =====
     function showCardStandar() {
-        // Reset posisi ke tengah
         const cardWidth = card.offsetWidth;
         const cardHeight = card.offsetHeight;
         
@@ -1091,7 +1103,6 @@
         card.style.transform = `translate(${posX}px, ${posY}px) scale(${scale})`;
     }
     
-    // ===== LOCAL STORAGE FUNCTIONS =====
     function loadFromStorage() {
         try {
             const savedData = localStorage.getItem(STORAGE_KEY);
@@ -1102,7 +1113,6 @@
                     background.style.backgroundImage = `url(${data.background})`;
                 }
                 
-                // Load effect settings
                 if (data.effectStandar !== undefined) {
                     effectStandarCheckbox.checked = data.effectStandar;
                 }
@@ -1110,7 +1120,6 @@
                     shadowEffectCheckbox.checked = data.shadowEffect;
                 }
                 
-                // Load semua preview images
                 if (data.preview1) {
                     const preview1Img = preview1.querySelector('img');
                     if (preview1Img) {
@@ -1126,7 +1135,6 @@
                     if (preview3Img) preview3Img.src = data.preview3;
                 }
                 
-                // Update kartu utama dan preview besar dari preview1
                 if (data.preview1) {
                     card.src = data.preview1;
                     mainCardPreview.src = data.preview1;
@@ -1172,7 +1180,6 @@
         saveToStorage();
     }
     
-    // ===== EFFECT TOGGLES - SALING EKSKLUSIF =====
     effectStandarCheckbox.addEventListener('change', (e) => {
         if (effectStandarCheckbox.checked) {
             shadowEffectCheckbox.checked = false;
@@ -1187,7 +1194,6 @@
         autoSave();
     });
     
-    // Touch events for swipe up to open settings
     let startYPos = 0;
     document.addEventListener('touchstart', (e) => {
         if (e.touches.length === 2) {
@@ -1210,10 +1216,8 @@
         const currentTime = new Date().getTime();
         const tapLength = currentTime - lastTap;
         if (tapLength < 300 && tapLength > 0) {
-            // Double tap detected
             e.preventDefault();
             
-            // Clear timer yang mungkin berjalan
             if (sequenceTimer) {
                 clearTimeout(sequenceTimer);
                 sequenceTimer = null;
@@ -1223,55 +1227,47 @@
                 touchToChangeTimeout = null;
             }
             
-            // CEK EFFECT YANG AKTIF
             if (shadowEffectCheckbox.checked) {
-                // EFFECT SHADOW ON
                 sequenceStage = 0;
                 isSequenceActive = true;
                 
                 sequenceTimer = setTimeout(() => {
                     if (isSequenceActive) {
-                        // Ambil gambar dari preview 1
                         const preview1Img = preview1.querySelector('img');
                         if (preview1Img) {
-                            // Update card image
                             card.src = preview1Img.src;
                             mainCardPreview.src = preview1Img.src;
                             updateMainCardPreview();
                         }
                         
-                        showCard(); // showCard dengan animasi fade in
+                        showCard();
                         sequenceStage = 1;
                     }
                     sequenceTimer = null;
                 }, 5000);
                 
             } else if (effectStandarCheckbox.checked) {
-                // EFFECT STANDAR ON
-                isSequenceActive = false; // Tidak pakai sequence
+                isSequenceActive = false;
                 
                 sequenceTimer = setTimeout(() => {
                     const preview1Img = preview1.querySelector('img');
                     if (preview1Img) {
-                        // Update card image
                         card.src = preview1Img.src;
                         mainCardPreview.src = preview1Img.src;
                         updateMainCardPreview();
                     }
                     
-                    showCardStandar(); // Muncul tanpa animasi
+                    showCardStandar();
                     sequenceTimer = null;
-                }, 1000); // 1 detik delay
+                }, 1000);
                 
             } else {
-                // KEDUA EFFECT OFF - TIDAK MELAKUKAN APA-APA
                 console.log('Both effects off - card will not appear');
             }
         }
         lastTap = currentTime;
     });
     
-    // ===== EVENT LISTENER UNTUK KARTU =====
     card.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
             isDragging = true;
@@ -1467,8 +1463,6 @@
             settings.style.top = '-100%';
             autoSave();
         });
-    } else {
-        console.error('closeSettingsBtn tidak ditemukan!');
     }
     
     function initSensor() {
