@@ -64,10 +64,9 @@
             opacity: 0;
             visibility: hidden;
             transform-origin: center;
-            transition: max-width 0.2s ease; /* Smooth transition saat ukuran berubah */
+            transition: max-width 0.2s ease;
         }
 
-        /* Style untuk slider card size */
         .size-control {
             display: flex;
             align-items: center;
@@ -158,7 +157,7 @@
             align-items: center;
             justify-content: center;
             background: #333;
-            cursor: pointer; /* Membuat preview jadi clickable */
+            cursor: pointer;
             transition: border-color 0.2s ease;
         }
         
@@ -170,7 +169,7 @@
             max-width: 100%;
             max-height: 100%;
             object-fit: contain;
-            pointer-events: none; /* Mencegah gambar mengganggu klik */
+            pointer-events: none;
         }
         
         .upload-label {
@@ -288,7 +287,6 @@
             display: none;
         }
         
-        /* TITIK INDIKATOR - LOGIKA SEDERHANA SEJERNIH POSSIBLE */
         #card-indicator {
             position: fixed;
             bottom: 8px;
@@ -307,7 +305,6 @@
             opacity: 1;
         }
 
-        /* Style untuk modal album GitHub - Diperbarui dengan folder system */
         .github-modal {
             position: fixed;
             top: 0;
@@ -365,7 +362,6 @@
             background: #45a049;
         }
         
-        /* Albums grid untuk folder */
         .albums-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -408,7 +404,6 @@
             word-break: break-word;
         }
         
-        /* Image grid - 3 kolom untuk gambar */
         .image-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -470,10 +465,9 @@
             font-size: 16px;
         }
 
-        /* ===== FRAME PREVIEW UNTUK KARTU UTAMA - FULL WIDTH ===== */
         .preview-frame-container {
-            margin: 20px -20px; /* Negatif margin untuk tembus padding settings */
-            width: 100vw; /* Full viewport width */
+            margin: 20px -20px;
+            width: 100vw;
             position: relative;
             left: 50%;
             right: 50%;
@@ -485,16 +479,16 @@
             color: #4CAF50;
             font-size: 14px;
             margin-bottom: 8px;
-            padding-left: 20px; /* Padding kembali untuk label */
+            padding-left: 20px;
         }
         
         .editor-frame {
-            width: 100vw; /* Full viewport width - sampai pinggir HP */
+            width: 100vw;
             height: 280px;
             border-top: 2px solid #4CAF50;
             border-bottom: 2px solid #4CAF50;
-            border-left: none; /* Tanpa border kiri */
-            border-right: none; /* Tanpa border kanan */
+            border-left: none;
+            border-right: none;
             background: #222;
             overflow: hidden;
             position: relative;
@@ -520,7 +514,6 @@
     <div id="background"></div>
     <img id="card" src="https://deckofcardsapi.com/static/img/AS.png" alt="Magic Card">
     
-    <!-- TITIK INDIKATOR -->
     <div id="card-indicator"></div>
     
     <div id="settings">
@@ -566,7 +559,6 @@
                 <button id="swap-cards">Swap Images 1↔2</button>
             </div>
 
-            <!-- ===== FRAME PREVIEW KARTU UTAMA - DITEMPATKAN DI ATAS SLIDER ===== -->
             <div class="preview-frame-container">
                 <div class="preview-label">🔮 PREVIEW KARTU UTAMA</div>
                 <div class="editor-frame">
@@ -574,7 +566,6 @@
                 </div>
             </div>
             
-            <!-- CARD SIZE SLIDER SECTION (TAMBAHAN BARU) -->
             <div class="setting-section">
                 <h3>Card Size</h3>
                 <div class="size-control">
@@ -605,30 +596,21 @@
     </button>
 
     <script>
-    // ========== PWA INSTALL FUNCTIONALITY UNTUK LAYAR UTAMA ==========
-    // Tambahkan di bagian paling atas JavaScript
-    
-    // Cek apakah sudah dalam mode standalone (sudah diinstall)
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                          window.navigator.standalone === true;
     
     if (!isStandalone) {
-        // Tambahkan install prompt jika belum diinstall
         let deferredPrompt;
         
         window.addEventListener('beforeinstallprompt', (e) => {
-            // Prevent Chrome 67 and earlier from automatically showing the prompt
             e.preventDefault();
-            // Stash the event so it can be triggered later
             deferredPrompt = e;
             
-            // Tampilkan toast notification untuk install
             setTimeout(() => {
                 showInstallToast();
             }, 3000);
         });
         
-        // Toast notification untuk install
         function showInstallToast() {
             const toast = document.createElement('div');
             toast.id = 'install-toast';
@@ -651,47 +633,30 @@
             
             document.body.appendChild(toast);
             
-            // Event handler untuk tombol install
             document.getElementById('install-now').addEventListener('click', async () => {
                 if (deferredPrompt) {
-                    // Show the install prompt
                     deferredPrompt.prompt();
-                    
-                    // Wait for the user to respond to the prompt
                     const { outcome } = await deferredPrompt.userChoice;
-                    
                     if (outcome === 'accepted') {
                         console.log('User accepted the install prompt');
                     }
-                    
                     deferredPrompt = null;
                 } else {
-                    // Jika prompt tidak tersedia, beri instruksi manual
-                    alert(`Untuk install Magic Card Trick ke layar utama:
-
-1. Tap menu Chrome (⋮) di pojok kanan atas
-2. Pilih "Add to Home Screen"
-3. Tap "Add"
-
-Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
+                    alert(`Untuk install Magic Card Trick ke layar utama:\n\n1. Tap menu Chrome (⋮) di pojok kanan atas\n2. Pilih "Add to Home Screen"\n3. Tap "Add"\n\nAplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
                 }
                 
-                // Hapus toast
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
                 }
             });
             
-            // Event handler untuk dismiss
             document.getElementById('dismiss-toast').addEventListener('click', () => {
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
                 }
-                // Simpan di localStorage agar tidak muncul lagi hari ini
                 localStorage.setItem('installToastDismissed', Date.now());
             });
             
-            // Auto hide setelah 15 detik
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
@@ -699,19 +664,15 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             }, 15000);
         }
         
-        // Cek apakah sudah pernah dismiss hari ini
         const lastDismiss = localStorage.getItem('installToastDismissed');
         const oneDay = 24 * 60 * 60 * 1000;
         
         if (!lastDismiss || (Date.now() - parseInt(lastDismiss)) > oneDay) {
-            // Tampilkan toast setelah 3 detik
             setTimeout(showInstallToast, 3000);
         }
         
-        // Deteksi saat app diinstall
         window.addEventListener('appinstalled', () => {
             console.log('Magic Card Trick berhasil diinstall ke layar utama!');
-            // Hapus toast jika masih ada
             const toast = document.getElementById('install-toast');
             if (toast && toast.parentNode) {
                 toast.parentNode.removeChild(toast);
@@ -719,10 +680,8 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         });
     }
     
-    // Register Service Worker untuk offline support
     if ('serviceWorker' in navigator && !isStandalone) {
         window.addEventListener('load', () => {
-            // Simple service worker untuk cache
             const swCode = `
                 const CACHE_NAME = 'magic-card-v1';
                 
@@ -764,9 +723,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             }
         });
     }
-    // ================================================================
     
-    // Elements
     const background = document.getElementById('background');
     const card = document.getElementById('card');
     const settings = document.getElementById('settings');
@@ -781,24 +738,19 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     const preview2 = document.getElementById('preview-2');
     const cardIndicator = document.getElementById('card-indicator');
     
-    // Card size elements
     const cardSizeSlider = document.getElementById('card-size-slider');
     const sizeValue = document.getElementById('size-value');
     
-    // Preview element untuk kartu utama
     const mainCardPreview = document.getElementById('main-card-preview');
 
-    // GitHub API URL - Diubah ke folder images untuk struktur folder
     const GITHUB_API_URL = 'https://api.github.com/repos/taskIfaisal/sw/contents/images';
     
-    // State untuk album dengan folder system
-    let currentFolder = null; // null berarti di root (menampilkan folder)
+    let currentFolder = null;
     let folderContents = [];
     let selectedImage = null;
-    let activeCardTarget = 1; // 1 untuk Card 1, 2 untuk Card 2
+    let activeCardTarget = 1;
     let modalElement = null;
 
-    // Initialize card properties
     let posX = window.innerWidth / 2 - card.offsetWidth / 2;
     let posY = window.innerHeight / 2 - card.offsetHeight / 2;
     let scale = 1;
@@ -810,36 +762,30 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     let lastPosY = 0;
     let lastTime = 0;
     
-    // Card images storage
     let cardImages = {
         image1: "https://raw.githubusercontent.com/taskIfaisal/sw/main/icon/image1.png",
         image2: "https://raw.githubusercontent.com/taskIfaisal/sw/main/icon/image2.png"
     };
     let currentCardImage = 1;
     
-    // SENSOR VARIABLES
     let smoothBeta = 0;
     let smoothGamma = 0;
     const sensitivity = 0.5;
     const smoothing = 0.2;
     let isSensorEnabled = false;
     
-    // Animation and timing control
     let isAnimating = false;
     let showCardTimeout = null;
     let changeCardTimeout = null;
     let touchToChangeTimeout = null;
     let hasBeenTouched = false;
     
-    // Double tap detection variables
     let tapCount = 0;
     let tapTimer = null;
     
-    // LOGIKA TITIK DARI CODE PERTAMA - DIPERBAIKI
     let indicatorTimeout = null;
     let cardAppearTimeout = null;
     
-    // STORAGE FUNCTIONS
     const STORAGE_KEYS = {
         image1: 'magic_card_image_1',
         image2: 'magic_card_image_2',
@@ -847,41 +793,31 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         cardSize: 'magic_card_size'
     };
 
-    // ===== CARD SIZE CONTROL =====
-    // Load saved size or use default 350
     let currentCardSize = parseInt(localStorage.getItem(STORAGE_KEYS.cardSize)) || 350;
     
-    // Apply initial size
     card.style.maxWidth = currentCardSize + 'px';
     sizeValue.textContent = currentCardSize + 'px';
     cardSizeSlider.value = currentCardSize;
     
-    // Update preview card size
     function updatePreviewCardSize() {
-        // Atur ukuran preview kartu utama sesuai dengan ukuran slider
         mainCardPreview.style.width = currentCardSize + 'px';
         mainCardPreview.style.height = 'auto';
-        // Posisikan sedikit turun (30px dari atas frame)
         mainCardPreview.style.position = 'absolute';
         mainCardPreview.style.top = '30px';
         mainCardPreview.style.left = '50%';
         mainCardPreview.style.transform = 'translateX(-50%)';
     }
     
-    // Panggil fungsi untuk mengatur posisi awal preview
     updatePreviewCardSize();
     
-    // Slider event listener
     cardSizeSlider.addEventListener('input', (e) => {
         const newSize = e.target.value;
         sizeValue.textContent = newSize + 'px';
         card.style.maxWidth = newSize + 'px';
         
-        // Update ukuran preview kartu utama secara real-time
         currentCardSize = parseInt(newSize);
         updatePreviewCardSize();
         
-        // Update posisi kartu jika sedang muncul
         if (card.style.display !== 'none' && !isAnimating) {
             const cardRect = card.getBoundingClientRect();
             posX = (window.innerWidth / 2) - (cardRect.width / 2);
@@ -890,7 +826,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         }
     });
 
-    // Save size when change
     cardSizeSlider.addEventListener('change', (e) => {
         localStorage.setItem(STORAGE_KEYS.cardSize, e.target.value);
         currentCardSize = parseInt(e.target.value);
@@ -899,7 +834,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     function saveToStorage() {
         localStorage.setItem(STORAGE_KEYS.image1, cardImages.image1);
         localStorage.setItem(STORAGE_KEYS.image2, cardImages.image2);
-        // Card size sudah disimpan di event change slider
     }
 
     function loadFromStorage() {
@@ -912,7 +846,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         if (img2) cardImages.image2 = img2;
         if (bg) background.style.backgroundImage = `url(${bg})`;
         
-        // Load saved card size
         if (savedSize) {
             currentCardSize = parseInt(savedSize);
             card.style.maxWidth = currentCardSize + 'px';
@@ -924,11 +857,9 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         updatePreviews();
         updateMainCardPreview();
         
-        // Preload images setelah load
         setTimeout(preloadImages, 100);
     }
     
-    // Update preview kartu utama dengan image1
     function updateMainCardPreview() {
         mainCardPreview.src = cardImages.image1;
     }
@@ -948,11 +879,9 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         if (preview1Img) preview1Img.src = cardImages.image1;
         if (preview2Img) preview2Img.src = cardImages.image2;
         
-        // Update preview kartu utama
         updateMainCardPreview();
     }
 
-    // Set initial positions
     card.style.display = 'block';
     card.style.opacity = '0';
     card.style.visibility = 'hidden';
@@ -963,13 +892,10 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     updateCardTransform();
     card.style.display = 'none';
     
-    // Initialize previews
     updatePreviews();
     
-    // Initialize sensor
     initSensor();
     
-    // ===== FUNGSI UNTUK ALBUM GITHUB DENGAN FOLDER SYSTEM =====
     async function loadRootFolders() {
         try {
             const response = await fetch(GITHUB_API_URL);
@@ -977,10 +903,8 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             
             const data = await response.json();
             
-            // Filter hanya folder (type = "dir")
             const folders = data.filter(item => item.type === "dir");
             
-            // Sorting folder berdasarkan nama
             folders.sort((a, b) => {
                 return a.name.localeCompare(b.name, undefined, { 
                     numeric: true,
@@ -1003,13 +927,11 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             
             const data = await response.json();
             
-            // Filter hanya file gambar
             const images = data.filter(file => {
                 const ext = file.name.split('.').pop().toLowerCase();
                 return ['png', 'jpg', 'jpeg', 'gif'].includes(ext);
             });
             
-            // Sorting gambar berdasarkan nama
             images.sort((a, b) => {
                 return a.name.localeCompare(b.name, undefined, { 
                     numeric: true,
@@ -1027,9 +949,8 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     function showGithubModal(cardTarget) {
         activeCardTarget = cardTarget;
         selectedImage = null;
-        currentFolder = null; // Reset ke root
+        currentFolder = null;
         
-        // Buat modal
         modalElement = document.createElement('div');
         modalElement.className = 'github-modal';
         modalElement.innerHTML = `
@@ -1040,49 +961,15 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             <div id="modal-content">
                 <div class="loading">Loading folders from GitHub...</div>
             </div>
-            <div class="modal-footer">
-                <button id="modal-apply" class="apply-btn" disabled>Pilih gambar dulu</button>
-            </div>
         `;
         
         document.body.appendChild(modalElement);
         
-        // Event listener untuk close
         document.getElementById('close-modal').addEventListener('click', () => {
             document.body.removeChild(modalElement);
             modalElement = null;
         });
         
-        // Event listener untuk apply
-        const applyBtn = document.getElementById('modal-apply');
-        applyBtn.addEventListener('click', () => {
-            if (selectedImage) {
-                // Update card image sesuai target
-                if (activeCardTarget === 1) {
-                    cardImages.image1 = selectedImage;
-                    updateMainCardPreview(); // Update preview kartu utama
-                } else {
-                    cardImages.image2 = selectedImage;
-                }
-                
-                updatePreviews();
-                saveToStorage();
-                
-                // Update card jika sedang tampil
-                if (card.style.display !== 'none') {
-                    if ((activeCardTarget === 1 && currentCardImage === 1) ||
-                        (activeCardTarget === 2 && currentCardImage === 2)) {
-                        card.src = selectedImage;
-                    }
-                }
-                
-                // Tutup modal
-                document.body.removeChild(modalElement);
-                modalElement = null;
-            }
-        });
-        
-        // Tampilkan folder-folder
         renderFolders();
     }
     
@@ -1111,15 +998,9 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         contentElement.innerHTML = html;
     }
     
-    // Fungsi untuk membuka folder - dibuat global agar bisa dipanggil dari onclick
     window.openFolder = async function(folderName) {
         currentFolder = folderName;
         selectedImage = null;
-        
-        // Disable apply button
-        const applyBtn = document.getElementById('modal-apply');
-        applyBtn.disabled = true;
-        applyBtn.textContent = 'Pilih gambar dulu';
         
         const contentElement = document.getElementById('modal-content');
         contentElement.innerHTML = '<div class="loading">Loading images...</div>';
@@ -1158,37 +1039,40 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         html += '</div>';
         contentElement.innerHTML = html;
         
-        // Tambahkan event listener ke grid items
         document.querySelectorAll('.grid-item').forEach(item => {
             item.addEventListener('click', () => {
-                document.querySelectorAll('.grid-item').forEach(i => {
-                    i.classList.remove('selected');
-                });
+                const imageUrl = item.dataset.url;
                 
-                item.classList.add('selected');
-                selectedImage = item.dataset.url;
+                if (activeCardTarget === 1) {
+                    cardImages.image1 = imageUrl;
+                    updateMainCardPreview();
+                } else {
+                    cardImages.image2 = imageUrl;
+                }
                 
-                const applyBtn = document.getElementById('modal-apply');
-                applyBtn.disabled = false;
-                applyBtn.textContent = `Apply ke Card ${activeCardTarget}`;
-                applyBtn.style.background = '#4CAF50';
+                updatePreviews();
+                saveToStorage();
+                
+                if (card.style.display !== 'none') {
+                    if ((activeCardTarget === 1 && currentCardImage === 1) ||
+                        (activeCardTarget === 2 && currentCardImage === 2)) {
+                        card.src = imageUrl;
+                    }
+                }
+                
+                document.body.removeChild(modalElement);
+                modalElement = null;
             });
         });
     };
     
-    // Fungsi untuk kembali ke daftar folder - dibuat global
     window.goBackToFolders = function() {
         currentFolder = null;
         selectedImage = null;
         
-        const applyBtn = document.getElementById('modal-apply');
-        applyBtn.disabled = true;
-        applyBtn.textContent = 'Pilih gambar dulu';
-        
         renderFolders();
     };
     
-    // ===== MEMBUAT PREVIEW CLICKABLE =====
     preview1.addEventListener('click', () => {
         showGithubModal(1);
     });
@@ -1197,14 +1081,12 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         showGithubModal(2);
     });
     
-    // Touch events for swipe up to open settings
     let startYPos = 0;
     document.addEventListener('touchstart', (e) => {
         if (e.touches.length === 2) {
             startYPos = e.touches[0].clientY;
         }
         
-        // Double tap detection
         if (e.touches.length === 1 && !isDragging) {
             tapCount++;
             
@@ -1230,31 +1112,25 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         }
     }, {passive: false});
     
-    // ===== LOGIKA TITIK YANG DIPINJAM DARI CODE PERTAMA =====
     function handleDoubleTap() {
         console.log("Double tap detected!");
         
-        // HAPUS SEMUA TIMEOUT SEBELUMNYA (LOGIKA CLEANUP)
         clearAllTimeouts();
         hideIndicator();
         
-        // Total waktu: 5 detik
-        const totalDelay = 5000; // 5 detik
-        const indicatorDelay = 4000; // Tampilkan titik 1 detik sebelum kartu muncul
+        const totalDelay = 5000;
+        const indicatorDelay = 4000;
         
-        // Tampilkan titik 1 detik sebelum kartu muncul
         indicatorTimeout = setTimeout(() => {
             showIndicator();
         }, indicatorDelay);
         
-        // Tampilkan kartu setelah 5 detik
         cardAppearTimeout = setTimeout(() => {
             hideIndicator();
             showCardWithTransformation();
         }, totalDelay);
     }
     
-    // Fungsi untuk membersihkan semua timeout
     function clearAllTimeouts() {
         if (showCardTimeout) {
             clearTimeout(showCardTimeout);
@@ -1278,20 +1154,15 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         }
     }
     
-    // Fungsi untuk menampilkan indikator (SIMPLE - langsung opacity 1)
     function showIndicator() {
         cardIndicator.classList.add('visible');
         console.log("Indicator shown - card will appear in 1 second");
     }
     
-    // Fungsi untuk menyembunyikan indikator (SIMPLE - langsung opacity 0)
     function hideIndicator() {
         cardIndicator.classList.remove('visible');
     }
     
-    // ===== FUNGSI LAINNYA TETAP SAMA =====
-    
-    // Card dragging functionality
     card.addEventListener('touchstart', (e) => {
         if (e.touches.length === 1) {
             isDragging = true;
@@ -1314,7 +1185,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         }
     }, {passive: false});
 
-    // Event touchend untuk kartu
     card.addEventListener('touchend', (e) => {
         setTimeout(() => {
             isDragging = false;
@@ -1363,7 +1233,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
                 const cardRect = card.getBoundingClientRect();
                 const exitThreshold = 30;
                 
-                // Check jika kartu sudah keluar layar
                 if (cardRect.bottom < -exitThreshold || 
                     cardRect.top > window.innerHeight + exitThreshold ||
                     cardRect.right < -exitThreshold || 
@@ -1389,7 +1258,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             const cardRect = card.getBoundingClientRect();
             const exitThreshold = 50;
             
-            // Check jika kartu sudah keluar layar atau dilempar cepat
             if (cardRect.bottom < -exitThreshold || 
                 cardRect.top > window.innerHeight + exitThreshold ||
                 cardRect.right < -exitThreshold || 
@@ -1405,7 +1273,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         }
     });
     
-    // Settings functionality
     bgUpload.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (!file) return;
@@ -1418,7 +1285,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         reader.readAsDataURL(file);
     });
     
-    // Card upload with image editor
     cardUpload1.addEventListener('change', (e) => handleCardUpload(e, 1));
     cardUpload2.addEventListener('change', (e) => handleCardUpload(e, 2));
     
@@ -1428,7 +1294,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
             image2: "https://raw.githubusercontent.com/taskIfaisal/sw/main/icon/image2.png"
         };
         updatePreviews();
-        updateMainCardPreview(); // Update preview kartu utama
+        updateMainCardPreview();
         
         if (card.style.display !== 'none') {
             card.src = cardImages.image1;
@@ -1450,7 +1316,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         cardImages.image2 = temp;
         
         updatePreviews();
-        updateMainCardPreview(); // Update preview kartu utama dengan image1 yang baru
+        updateMainCardPreview();
         
         if (card.style.display !== 'none') {
             if (currentCardImage === 1) {
@@ -1473,7 +1339,7 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
                 showImageEditor(event.target.result, (editedImage) => {
                     if (imageNumber === 1) {
                         cardImages.image1 = editedImage;
-                        updateMainCardPreview(); // Update preview kartu utama
+                        updateMainCardPreview();
                     } else {
                         cardImages.image2 = editedImage;
                     }
@@ -1501,7 +1367,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         if (isAnimating) return;
         isAnimating = true;
         
-        // Bersihkan timeout yang mungkin masih ada
         clearAllTimeouts();
         
         currentCardImage = 1;
@@ -1593,7 +1458,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         card.style.display = 'none';
         card.classList.remove('card-flipping');
         
-        // Reset ke posisi tengah bawah
         const cardRect = card.getBoundingClientRect();
         posX = Math.floor(window.innerWidth / 2 - cardRect.width / 2);
         posY = window.innerHeight + card.offsetHeight;
@@ -1741,7 +1605,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         card.style.transform = `translate(${posX}px, ${posY}px)`;
     }
     
-    // Handle window resize
     window.addEventListener('resize', () => {
         if (card.style.display !== 'none') {
             const cardRect = card.getBoundingClientRect();
@@ -1751,7 +1614,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
         }
     });
     
-    // Initialize card position
     window.addEventListener('load', () => {
         card.style.display = 'block';
         card.style.left = '0';
@@ -1774,7 +1636,6 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
                 card.style.display = 'none';
                 loadFromStorage();
                 
-                // Pre-load root folders di background
                 loadRootFolders();
             }, 100);
         }, 100);
@@ -1782,5 +1643,3 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     </script>
 </body>
 </html>
-
-terapkan juga pada code saya yang ini
