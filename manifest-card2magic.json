@@ -1,6 +1,7 @@
 {
   "name": "Card2Magic",
   "short_name": "Card2Magic",
+  "description": "Magic card trick with 3 favorites",
   "start_url": "./card2magic.html",
   "display": "standalone",
   "background_color": "#000000",
@@ -9,7 +10,8 @@
     {
       "src": "./icon/card2magic-512.png",
       "sizes": "512x512",
-      "type": "image/png"
+      "type": "image/png",
+      "purpose": "any maskable"
     }
   ]
 }
