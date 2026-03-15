@@ -518,6 +518,35 @@
                 opacity: 1;
             }
         }
+        
+        /* Install button styling */
+        #install-button {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+            z-index: 10000;
+            cursor: pointer;
+            animation: bounce 2s infinite;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateX(-50%) translateY(0); }
+            50% { transform: translateX(-50%) translateY(-10px); }
+        }
+        
+        #install-button:hover {
+            transform: translateX(-50%) scale(1.05);
+        }
     </style>
 </head>
 <body>
@@ -625,10 +654,100 @@
 
     <script>
     // ========== PWA INSTALL FUNCTIONALITY UNTUK LAYAR UTAMA ==========
-    // ========== PWA INSTALL FUNCTIONALITY UNTUK LAYAR UTAMA ==========
+    // Cek apakah sudah dalam mode standalone (terinstall)
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
+                         window.navigator.standalone === true;
+    
+    // Variable untuk menyimpan event beforeinstallprompt
+    let deferredPrompt;
+    
+    // Jika belum diinstall, tampilkan tombol install
+    if (!isStandalone) {
+        // Tangkap event beforeinstallprompt
+        window.addEventListener('beforeinstallprompt', (e) => {
+            console.log('beforeinstallprompt fired!');
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButton();
+        });
+        
+        // Fungsi untuk menampilkan tombol install
+        function showInstallButton() {
+            // Cek apakah tombol sudah ada
+            if (document.getElementById('install-button')) return;
+            
+            // Cek apakah sudah pernah dismiss (opsional)
+            const lastDismiss = localStorage.getItem('installDismissed_card2magic');
+            const oneDay = 24 * 60 * 60 * 1000;
+            
+            if (lastDismiss && (Date.now() - parseInt(lastDismiss)) < oneDay) {
+                return; // Jangan tampilkan jika sudah dismiss hari ini
+            }
+            
+            const installBtn = document.createElement('button');
+            installBtn.id = 'install-button';
+            installBtn.innerHTML = '📲 Install Card2Magic ke Layar Utama';
+            
+            installBtn.addEventListener('click', async () => {
+                if (!deferredPrompt) {
+                    // Fallback jika prompt tidak tersedia
+                    alert('Untuk install Card2Magic:\n\n1. Tap menu Chrome (⋮)\n2. Pilih "Add to Home Screen"\n3. Tap "Add"');
+                    installBtn.remove();
+                    return;
+                }
+                
+                // Tampilkan prompt install
+                deferredPrompt.prompt();
+                const { outcome } = await deferredPrompt.userChoice;
+                
+                if (outcome === 'accepted') {
+                    console.log('User accepted install');
+                    installBtn.remove();
+                }
+                
+                deferredPrompt = null;
+            });
+            
+            document.body.appendChild(installBtn);
+            
+            // Auto hide setelah 30 detik
+            setTimeout(() => {
+                if (installBtn.parentNode) {
+                    installBtn.remove();
+                }
+            }, 30000);
+        }
+        
+        // Fallback: jika beforeinstallprompt tidak muncul dalam 5 detik
+        setTimeout(() => {
+            if (!deferredPrompt && !document.getElementById('install-button')) {
+                showInstallButton();
+            }
+        }, 5000);
+        
+        // Event saat app berhasil diinstall
+        window.addEventListener('appinstalled', () => {
+            console.log('Card2Magic berhasil diinstall!');
+            const btn = document.getElementById('install-button');
+            if (btn) btn.remove();
+        });
+    }
+    
+    // Register Service Worker
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw-card2magic.js', { scope: './' })
+                .then(registration => {
+                    console.log('Service Worker registered:', registration);
+                })
+                .catch(error => {
+                    console.log('Service Worker registration failed:', error);
+                });
+        });
+    }
     // ================================================================
     
-    // [SISA JAVASCRIPT ANDA TETAP SAMA]
+    // [SISA JAVASCRIPT ANDA TETAP SAMA - MULAI DARI SINI]
     const background = document.getElementById('background');
     const card = document.getElementById('card');
     const settings = document.getElementById('settings');
