@@ -7,7 +7,7 @@
     
     <!-- ========== PWA META TAGS UNTUK INSTALL KE LAYAR UTAMA ========== -->
     <meta name="theme-color" content="#000000">
-    <meta name="description" content="Magic Card Trick - A magical card transformation app">
+    <meta name="description" content="Magic Card Trick - A magical card transformation app with flip effect">
     <link rel="manifest" href="./manifest.json">
     <!-- =============================================================== -->
     
@@ -20,6 +20,7 @@
     <link rel="icon" type="image/png" sizes="192x192" href="./icon/slide-512x512.png">
     
     <style>
+        /* [CSS ANDA TETAP SAMA] */
         html, body {
             margin: 0;
             padding: 0;
@@ -508,6 +509,27 @@
             pointer-events: none;
             transition: all 0.3s ease;
         }
+        
+        /* Toast notification untuk install */
+        #install-toast {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 10001;
+            animation: slideUp 0.3s ease;
+        }
+        
+        @keyframes slideUp {
+            from {
+                transform: translateX(-50%) translateY(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(-50%) translateY(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
@@ -596,6 +618,7 @@
     </button>
 
     <script>
+    // ========== PWA INSTALL FUNCTIONALITY UNTUK LAYAR UTAMA ==========
     const isStandalone = window.matchMedia('(display-mode: standalone)').matches || 
                          window.navigator.standalone === true;
     
@@ -612,19 +635,26 @@
         });
         
         function showInstallToast() {
+            const lastDismiss = localStorage.getItem('installToastDismissed_slide');
+            const oneDay = 24 * 60 * 60 * 1000;
+            
+            if (lastDismiss && (Date.now() - parseInt(lastDismiss)) < oneDay) {
+                return;
+            }
+            
             const toast = document.createElement('div');
             toast.id = 'install-toast';
             toast.innerHTML = `
-                <div style="background: rgba(0,0,0,0.8); color: white; padding: 12px 16px; border-radius: 8px; 
-                     position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); 
-                     z-index: 10000; text-align: center; max-width: 300px; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">
-                    <div style="margin-bottom: 8px; font-weight: bold;">✨ Install Magic Card Trick</div>
-                    <div style="font-size: 14px; margin-bottom: 10px;">Install ke layar utama untuk pengalaman terbaik!</div>
-                    <div style="display: flex; gap: 10px; justify-content: center;">
-                        <button id="install-now" style="background: #2196F3; color: white; border: none; padding: 6px 12px; border-radius: 4px; font-size: 14px; cursor: pointer;">
-                            Install Now
+                <div style="background: rgba(0,0,0,0.9); color: white; padding: 15px 20px; border-radius: 12px; 
+                     text-align: center; max-width: 320px; box-shadow: 0 8px 24px rgba(0,0,0,0.5); 
+                     border: 1px solid #4CAF50; backdrop-filter: blur(10px);">
+                    <div style="margin-bottom: 10px; font-weight: bold; font-size: 18px;">✨ Install Magic Card Trick (Slide Card)</div>
+                    <div style="font-size: 14px; margin-bottom: 15px; color: #ddd;">Install untuk akses cepat ke aplikasi flip card!</div>
+                    <div style="display: flex; gap: 12px; justify-content: center;">
+                        <button id="install-now" style="background: #4CAF50; color: white; border: none; padding: 10px 20px; border-radius: 8px; font-size: 15px; font-weight: bold; cursor: pointer; flex: 1;">
+                            Install
                         </button>
-                        <button id="dismiss-toast" style="background: transparent; color: #aaa; border: 1px solid #666; padding: 6px 12px; border-radius: 4px; font-size: 14px; cursor: pointer;">
+                        <button id="dismiss-toast" style="background: transparent; color: #aaa; border: 1px solid #666; padding: 10px 20px; border-radius: 8px; font-size: 15px; cursor: pointer; flex: 1;">
                             Nanti
                         </button>
                     </div>
@@ -641,8 +671,6 @@
                         console.log('User accepted the install prompt');
                     }
                     deferredPrompt = null;
-                } else {
-                    alert(`Untuk install Magic Card Trick ke layar utama:\n\n1. Tap menu Chrome (⋮) di pojok kanan atas\n2. Pilih "Add to Home Screen"\n3. Tap "Add"\n\nAplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
                 }
                 
                 if (toast.parentNode) {
@@ -654,25 +682,18 @@
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
                 }
-                localStorage.setItem('installToastDismissed', Date.now());
+                localStorage.setItem('installToastDismissed_slide', Date.now());
             });
             
             setTimeout(() => {
                 if (toast.parentNode) {
                     toast.parentNode.removeChild(toast);
                 }
-            }, 15000);
-        }
-        
-        const lastDismiss = localStorage.getItem('installToastDismissed');
-        const oneDay = 24 * 60 * 60 * 1000;
-        
-        if (!lastDismiss || (Date.now() - parseInt(lastDismiss)) > oneDay) {
-            setTimeout(showInstallToast, 3000);
+            }, 20000);
         }
         
         window.addEventListener('appinstalled', () => {
-            console.log('Magic Card Trick berhasil diinstall ke layar utama!');
+            console.log('Magic Card Trick (Slide Card) berhasil diinstall!');
             const toast = document.getElementById('install-toast');
             if (toast && toast.parentNode) {
                 toast.parentNode.removeChild(toast);
@@ -680,20 +701,38 @@
         });
     }
     
+    // Register Service Worker untuk offline support - dengan nama berbeda
     if ('serviceWorker' in navigator && !isStandalone) {
         window.addEventListener('load', () => {
+            // Buat service worker spesifik untuk slidecard
             const swCode = `
-                const CACHE_NAME = 'magic-card-v1';
+                const CACHE_NAME = 'magic-card-slide-v1';
                 
                 self.addEventListener('install', (event) => {
+                    self.skipWaiting();
                     event.waitUntil(
                         caches.open(CACHE_NAME)
                             .then(cache => {
                                 return cache.addAll([
                                     './slidecard.html',
+                                    './manifest.json',
                                     './icon/slide-512x512.png'
                                 ]);
                             })
+                    );
+                });
+                
+                self.addEventListener('activate', (event) => {
+                    event.waitUntil(
+                        caches.keys().then(cacheNames => {
+                            return Promise.all(
+                                cacheNames.map(cacheName => {
+                                    if (cacheName !== CACHE_NAME) {
+                                        return caches.delete(cacheName);
+                                    }
+                                })
+                            );
+                        })
                     );
                 });
                 
@@ -713,17 +752,19 @@
                 
                 navigator.serviceWorker.register(swUrl, { scope: './' })
                     .then(registration => {
-                        console.log('Service Worker registered untuk offline support');
+                        console.log('Slide Card Service Worker registered');
                     })
                     .catch(error => {
-                        console.log('Service Worker registration failed:', error);
+                        console.log('Slide Card Service Worker registration failed:', error);
                     });
             } catch (error) {
-                console.log('Error creating Service Worker:', error);
+                console.log('Error creating Slide Card Service Worker:', error);
             }
         });
     }
+    // ================================================================
     
+    // [SISA JAVASCRIPT ANDA TETAP SAMA]
     const background = document.getElementById('background');
     const card = document.getElementById('card');
     const settings = document.getElementById('settings');
