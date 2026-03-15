@@ -970,111 +970,204 @@ Aplikasi akan muncul di layar utama Anda seperti aplikasi native!`);
     initSensor();
     
     // ===== FUNGSI UNTUK ALBUM GITHUB DENGAN FOLDER SYSTEM =====
-    async function loadRootFolders() {
-        try {
-            const response = await fetch(GITHUB_API_URL);
-            if (!response.ok) throw new Error('Failed to fetch');
-            
-            const data = await response.json();
-            
-            // Filter hanya folder (type = "dir")
-            const folders = data.filter(item => item.type === "dir");
-            
-            // Sorting folder berdasarkan nama
-            folders.sort((a, b) => {
-                return a.name.localeCompare(b.name, undefined, { 
-                    numeric: true,
-                    sensitivity: 'base' 
-                });
-            });
-            
-            return folders;
-        } catch (error) {
-            console.error('Error loading root folders:', error);
-            return [];
-        }
-    }
-    
-    async function loadFolderContents(folderName) {
-        try {
-            const folderUrl = `${GITHUB_API_URL}/${folderName}`;
-            const response = await fetch(folderUrl);
-            if (!response.ok) throw new Error('Failed to fetch folder');
-            
-            const data = await response.json();
-            
-            // Filter hanya file gambar
-            const images = data.filter(file => {
-                const ext = file.name.split('.').pop().toLowerCase();
-                return ['png', 'jpg', 'jpeg', 'gif'].includes(ext);
-            });
-            
-            // Sorting gambar berdasarkan nama
-            images.sort((a, b) => {
-                return a.name.localeCompare(b.name, undefined, { 
-                    numeric: true,
-                    sensitivity: 'base' 
-                });
-            });
-            
-            return images;
-        } catch (error) {
-            console.error('Error loading folder contents:', error);
-            return [];
-        }
-    }
-    
-    function showGithubModal(cardTarget) {
-        activeCardTarget = cardTarget;
-        selectedImage = null;
-        currentFolder = null; // Reset ke root
+async function loadRootFolders() {
+    try {
+        const response = await fetch(GITHUB_API_URL);
+        if (!response.ok) throw new Error('Failed to fetch');
         
-        // Buat modal
-        modalElement = document.createElement('div');
-        modalElement.className = 'github-modal';
-        modalElement.innerHTML = `
-            <div class="modal-header">
-                <h3>📁 Pilih Gambar untuk Card ${cardTarget}</h3>
-                <button id="close-modal">✕</button>
-            </div>
-            <div id="modal-content">
-                <div class="loading">Loading folders from GitHub...</div>
-            </div>
-            <div class="modal-footer">
-                <button id="modal-apply" class="apply-btn" disabled>Pilih gambar dulu</button>
+        const data = await response.json();
+        
+        // Filter hanya folder (type = "dir")
+        const folders = data.filter(item => item.type === "dir");
+        
+        // Sorting folder berdasarkan nama
+        folders.sort((a, b) => {
+            return a.name.localeCompare(b.name, undefined, { 
+                numeric: true,
+                sensitivity: 'base' 
+            });
+        });
+        
+        return folders;
+    } catch (error) {
+        console.error('Error loading root folders:', error);
+        return [];
+    }
+}
+
+async function loadFolderContents(folderName) {
+    try {
+        const folderUrl = `${GITHUB_API_URL}/${folderName}`;
+        const response = await fetch(folderUrl);
+        if (!response.ok) throw new Error('Failed to fetch folder');
+        
+        const data = await response.json();
+        
+        // Filter hanya file gambar
+        const images = data.filter(file => {
+            const ext = file.name.split('.').pop().toLowerCase();
+            return ['png', 'jpg', 'jpeg', 'gif'].includes(ext);
+        });
+        
+        // Sorting gambar berdasarkan nama
+        images.sort((a, b) => {
+            return a.name.localeCompare(b.name, undefined, { 
+                numeric: true,
+                sensitivity: 'base' 
+            });
+        });
+        
+        return images;
+    } catch (error) {
+        console.error('Error loading folder contents:', error);
+        return [];
+    }
+}
+
+function showGithubModal(cardTarget) {
+    activeCardTarget = cardTarget;
+    selectedImage = null;
+    currentFolder = null; // Reset ke root
+    
+    // Buat modal
+    modalElement = document.createElement('div');
+    modalElement.className = 'github-modal';
+    modalElement.innerHTML = `
+        <div class="modal-header">
+            <h3>📁 Pilih Gambar untuk Card ${cardTarget}</h3>
+            <button id="close-modal">✕</button>
+        </div>
+        <div id="modal-content">
+            <div class="loading">Loading folders from GitHub...</div>
+        </div>
+    `; // HAPUS MODAL FOOTER
+    
+    document.body.appendChild(modalElement);
+    
+    // Event listener untuk close
+    document.getElementById('close-modal').addEventListener('click', () => {
+        document.body.removeChild(modalElement);
+        modalElement = null;
+    });
+    
+    // Tampilkan folder-folder
+    renderFolders();
+}
+
+async function renderFolders() {
+    const contentElement = document.getElementById('modal-content');
+    
+    const folders = await loadRootFolders();
+    
+    if (folders.length === 0) {
+        contentElement.innerHTML = '<div class="error-msg">Tidak ada folder ditemukan</div>';
+        return;
+    }
+    
+    let html = '<div class="albums-grid">';
+    
+    folders.forEach(folder => {
+        html += `
+            <div class="album-item" onclick="window.openFolder('${folder.name}')">
+                <div class="folder-icon">📁</div>
+                <div class="folder-name">${folder.name}</div>
             </div>
         `;
+    });
+    
+    html += '</div>';
+    contentElement.innerHTML = html;
+}
+
+// Fungsi untuk membuka folder - dibuat global agar bisa dipanggil dari onclick
+window.openFolder = async function(folderName) {
+    currentFolder = folderName;
+    selectedImage = null;
+    
+    const contentElement = document.getElementById('modal-content');
+    contentElement.innerHTML = '<div class="loading">Loading images...</div>';
+    
+    const images = await loadFolderContents(folderName);
+    
+    if (images.length === 0) {
+        contentElement.innerHTML = `
+            <div class="folder-header">
+                <button class="back-button" onclick="window.goBackToFolders()">← Back</button>
+                <h3>${folderName}</h3>
+            </div>
+            <div class="error-msg">Tidak ada gambar dalam folder ini</div>
+        `;
+        return;
+    }
+    
+    let html = `
+        <div class="folder-header">
+            <button class="back-button" onclick="window.goBackToFolders()">← Back</button>
+            <h3>${folderName}</h3>
+        </div>
+        <div class="image-grid">
+    `;
+    
+    images.forEach(img => {
+        const downloadUrl = img.download_url || `https://raw.githubusercontent.com/taskIfaisal/sw/main/images/${folderName}/${img.name}`;
         
-        document.body.appendChild(modalElement);
-        
-        // Event listener untuk close
-        document.getElementById('close-modal').addEventListener('click', () => {
+        html += `
+            <div class="grid-item" data-url="${downloadUrl}">
+                <img src="${downloadUrl}" alt="${img.name}" loading="lazy">
+            </div>
+        `;
+    });
+    
+    html += '</div>';
+    contentElement.innerHTML = html;
+    
+    // SINGLE CLICK LANGSUNG APPLY GAMBAR (TANPA TOMBOL APPLY)
+    document.querySelectorAll('.grid-item').forEach(item => {
+        item.addEventListener('click', () => {
+            const imageUrl = item.dataset.url;
+            
+            // Update card image sesuai target
+            if (activeCardTarget === 1) {
+                cardImages.image1 = imageUrl;
+                updateMainCardPreview(); // Update preview kartu utama
+            } else {
+                cardImages.image2 = imageUrl;
+            }
+            
+            updatePreviews();
+            saveToStorage();
+            
+            // Update card jika sedang tampil
+            if (card.style.display !== 'none') {
+                if ((activeCardTarget === 1 && currentCardImage === 1) ||
+                    (activeCardTarget === 2 && currentCardImage === 2)) {
+                    card.src = imageUrl;
+                }
+            }
+            
+            // Tutup modal
             document.body.removeChild(modalElement);
             modalElement = null;
         });
-        
-        // Event listener untuk apply
-        const applyBtn = document.getElementById('modal-apply');
-        applyBtn.addEventListener('click', () => {
-            if (selectedImage) {
-                // Update card image sesuai target
-                if (activeCardTarget === 1) {
-                    cardImages.image1 = selectedImage;
-                    updateMainCardPreview(); // Update preview kartu utama
-                } else {
-                    cardImages.image2 = selectedImage;
-                }
-                
-                updatePreviews();
-                saveToStorage();
-                
-                // Update card jika sedang tampil
-                if (card.style.display !== 'none') {
-                    if ((activeCardTarget === 1 && currentCardImage === 1) ||
-                        (activeCardTarget === 2 && currentCardImage === 2)) {
-                        card.src = selectedImage;
-                    }
-                }
+    });
+};
+
+// Fungsi untuk kembali ke daftar folder - dibuat global
+window.goBackToFolders = function() {
+    currentFolder = null;
+    selectedImage = null;
+    
+    renderFolders();
+};
+
+// ===== MEMBUAT PREVIEW CLICKABLE =====
+preview1.addEventListener('click', () => {
+    showGithubModal(1);
+});
+
+preview2.addEventListener('click', () => {
+    showGithubModal(2);
+});
                 
                 // Tutup modal
                 document.body.removeChild(modalElement);
