@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Magic Card Trick</title>
-    <link rel="manifest" href="./manifest.json">
+    <!-- <link rel="manifest" href="./manifest.json"> -->
     <link rel="apple-touch-icon" href="./icon/card2phone-512x512.png">
     <link rel="apple-touch-startup-image" href="./icon/card2phone-512x512.png">
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -642,18 +642,17 @@
             border: 1px solid #f5c6cb;
         }
         
-        /* Tombol remove background */
+        /* Tombol remove background (HIJAU) */
         #remove-bg-btn {
-            width: 100%;
-            padding: 14px;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            flex: 3;
+            padding: 14px 10px;
+            background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
             color: white;
             border: none;
             border-radius: 50px;
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            margin: 5px 0;
             transition: all 0.3s ease;
             letter-spacing: 0.5px;
             box-shadow: 0 4px 6px rgba(0,0,0,0.1);
@@ -661,7 +660,7 @@
 
         #remove-bg-btn:hover:not(:disabled) {
             transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(102, 126, 234, 0.3);
+            box-shadow: 0 6px 12px rgba(76, 175, 80, 0.3);
         }
 
         #remove-bg-btn:disabled {
@@ -672,6 +671,44 @@
 
         #remove-bg-btn.processing {
             background: linear-gradient(135deg, #888, #555);
+        }
+        
+        /* Tombol download (ABU-ABU) */
+        #download-result-btn {
+            flex: 1;
+            padding: 14px 5px;
+            background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        #download-result-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(108, 117, 125, 0.3);
+        }
+
+        #download-result-btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* Container tombol sejajar */
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 5px;
         }
     </style>
 </head>
@@ -817,13 +854,21 @@
         <!-- REMOVE BACKGROUND SECTION - TAMBAHAN BARU -->
         <div class="setting-section" style="border-top: 1px solid #333; padding-top: 15px; margin-top: 10px;">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                <h3 style="margin: 0; color: #4CAF50;">🧹 REMOVE BACKGROUND</h3>
+                <!-- <h3 style="margin: 0; color: #4CAF50;">🧹 REMOVE BACKGROUND</h3> -->
             </div>
             
-            <!-- Tombol Remove Background -->
-            <button id="remove-bg-btn">
-                🧹 Hapus Background dari Gambar Utama
-            </button>
+            <!-- Container untuk 2 tombol sejajar -->
+            <div class="button-row">
+                <!-- Tombol Hapus Background (HIJAU) -->
+                <button id="remove-bg-btn">
+                    🧹 Hapus Background
+                </button>
+                
+                <!-- Tombol Download (ABU-ABU) -->
+                <button id="download-result-btn" disabled>
+                    ⬇️ Unduh
+                </button>
+            </div>
             
             <!-- Status message (hidden by default) -->
             <div id="remove-bg-status" class="remove-bg-status" style="display: none;"></div>
@@ -880,6 +925,7 @@
 
         // Remove Background elements
         const removeBgBtn = document.getElementById('remove-bg-btn');
+        const downloadBtn = document.getElementById('download-result-btn');
         const removeBgStatus = document.getElementById('remove-bg-status');
 
         // GitHub API URL
@@ -1208,6 +1254,10 @@
                     // Jika yang dipilih Favorite 1, update kartu utama dan preview besar
                     if (activePreview === 1) {
                         updateCardImage(imageUrl);
+                        
+                        // Reset download button karena gambar berubah
+                        processedImageBlob = null;
+                        updateDownloadButtonState();
                     }
                     
                     // Highlight preview yang dipilih (border orange)
@@ -2193,6 +2243,10 @@
                 reader.onload = (event) => {
                     const imageSrc = event.target.result;
                     updateCardImage(imageSrc);
+                    
+                    // Reset download button karena gambar berubah
+                    processedImageBlob = null;
+                    updateDownloadButtonState();
                 };
                 reader.readAsDataURL(file);
             }
@@ -2334,6 +2388,18 @@
         // ===== REMOVE BACKGROUND FUNCTIONALITY =====
         const REMOVE_BG_API_KEY = '2crJY3ybEroko55EEQeVFh9C';
         const REMOVE_BG_API_URL = 'https://api.remove.bg/v1.0/removebg';
+        
+        // Variable untuk menyimpan blob hasil remove background
+        let processedImageBlob = null;
+
+        // Fungsi untuk update state tombol download
+        function updateDownloadButtonState() {
+            if (processedImageBlob) {
+                downloadBtn.disabled = false;
+            } else {
+                downloadBtn.disabled = true;
+            }
+        }
 
         // Fungsi untuk menampilkan status
         function showRemoveBgStatus(message, isError = false) {
@@ -2351,7 +2417,7 @@
             if (isLoading) {
                 removeBgBtn.disabled = true;
                 removeBgBtn.classList.add('processing');
-                removeBgBtn.innerHTML = '⏳ MEMPROSES...';
+                removeBgBtn.innerHTML = '⏳ Memproses...';
                 
                 // Tampilkan loading di preview utama
                 const editorFrame = document.querySelector('.editor-frame');
@@ -2371,7 +2437,7 @@
             } else {
                 removeBgBtn.disabled = false;
                 removeBgBtn.classList.remove('processing');
-                removeBgBtn.innerHTML = '🧹 Hapus Background dari Gambar Utama';
+                removeBgBtn.innerHTML = '🧹 Hapus Background';
                 
                 // Hapus loading overlay
                 const loadingOverlay = document.getElementById('bg-loading-overlay');
@@ -2398,6 +2464,10 @@
             try {
                 setRemoveBgLoading(true);
                 hideRemoveBgStatus();
+                
+                // Reset processed image
+                processedImageBlob = null;
+                updateDownloadButtonState();
                 
                 // Konversi image src ke blob
                 let imageBlob;
@@ -2467,6 +2537,9 @@
                 // Dapatkan hasil sebagai blob
                 const resultBlob = await response.blob();
                 
+                // Simpan blob untuk didownload nanti
+                processedImageBlob = resultBlob;
+                
                 // Konversi blob ke data URL
                 const reader = new FileReader();
                 reader.onload = function(event) {
@@ -2477,6 +2550,9 @@
                     
                     // Selesai loading
                     setRemoveBgLoading(false);
+                    
+                    // Update tombol download
+                    updateDownloadButtonState();
                     
                     // Tampilkan pesan sukses
                     showRemoveBgStatus('✅ Background berhasil dihapus!');
@@ -2505,6 +2581,39 @@
                 setTimeout(hideRemoveBgStatus, 5000);
             }
         });
+        
+        // Event listener untuk tombol download
+        downloadBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            
+            if (!processedImageBlob) {
+                showRemoveBgStatus('Tidak ada hasil untuk diunduh', true);
+                setTimeout(hideRemoveBgStatus, 2000);
+                return;
+            }
+            
+            // Buat URL dari blob
+            const url = URL.createObjectURL(processedImageBlob);
+            
+            // Buat link download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'removed-background.png';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            
+            // Bersihkan URL
+            URL.revokeObjectURL(url);
+            
+            // Tampilkan pesan sukses
+            showRemoveBgStatus('✅ Gambar berhasil diunduh!');
+            setTimeout(hideRemoveBgStatus, 2000);
+        });
+        
+        // Inisialisasi state tombol download
+        updateDownloadButtonState();
     </script>
 </body>
 </html>
